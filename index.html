@@ -3,38 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>OfficeWard — Business Dashboard</title>
-
-<meta name="description" content="OfficeWard customer dashboard">
-
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<title>OfficeWard Business Dashboard</title>
+<meta name="description" content="OfficeWard Business Dashboard">
 
 <style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700;800&display=swap');
+
 :root {
     --bg: #070a10;
-    --sidebar: #090d15;
-    --panel: #0d121c;
+    --panel: #0c111a;
     --panel-2: #101722;
     --border: rgba(255,255,255,.08);
-    --border-hover: rgba(255,255,255,.14);
-
     --text: #f5f7fb;
-    --muted: #8993a5;
-    --muted-2: #5e6879;
-
-    --blue: #3d8cff;
-    --blue-bright: #69a7ff;
-    --blue-soft: rgba(61,140,255,.12);
-
-    --green: #36d98b;
-    --yellow: #f2c94c;
-    --red: #ff5f67;
-
-    --radius: 14px;
+    --muted: #8c97a8;
+    --blue: #1683ff;
+    --blue-2: #4aa3ff;
+    --green: #32d583;
+    --yellow: #f5c451;
+    --red: #ff5f6d;
+    --sidebar: 250px;
 }
 
 * {
@@ -56,7 +43,8 @@ body {
 
 button,
 input,
-select {
+select,
+textarea {
     font: inherit;
 }
 
@@ -64,42 +52,220 @@ button {
     cursor: pointer;
 }
 
-a {
-    color: inherit;
-    text-decoration: none;
-}
+/* =========================================================
+   AUTH SCREEN
+========================================================= */
 
-/* =========================
-   APP SHELL
-========================= */
-
-.app {
+#auth-screen {
     min-height: 100vh;
     display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 20px;
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 50% 15%, rgba(22,131,255,.13), transparent 32%),
+        radial-gradient(circle at 80% 90%, rgba(22,131,255,.06), transparent 28%),
+        var(--bg);
 }
 
-/* =========================
-   SIDEBAR
-========================= */
+.auth-glow {
+    position: absolute;
+    width: 500px;
+    height: 500px;
+    border-radius: 50%;
+    background: rgba(22,131,255,.05);
+    filter: blur(100px);
+    pointer-events: none;
+}
+
+.auth-card {
+    width: min(430px, 100%);
+    position: relative;
+    z-index: 2;
+}
+
+.auth-logo {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.auth-logo-mark {
+    width: 52px;
+    height: 52px;
+    margin: 0 auto 16px;
+    border: 3px solid var(--blue);
+    border-radius: 50%;
+    position: relative;
+    box-shadow: 0 0 35px rgba(22,131,255,.28);
+}
+
+.auth-logo-mark::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: var(--bg);
+    border-radius: 50%;
+    top: 13px;
+    left: 13px;
+}
+
+.auth-logo h1 {
+    font-size: 26px;
+    letter-spacing: .16em;
+    font-weight: 800;
+}
+
+.auth-logo p {
+    margin-top: 7px;
+    color: var(--muted);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    letter-spacing: .13em;
+}
+
+.auth-box {
+    background: rgba(12,17,26,.92);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 30px 80px rgba(0,0,0,.4);
+    backdrop-filter: blur(20px);
+}
+
+.auth-box h2 {
+    font-size: 24px;
+    margin-bottom: 7px;
+}
+
+.auth-subtitle {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 25px;
+}
+
+.auth-form {
+    display: none;
+}
+
+.auth-form.active {
+    display: block;
+}
+
+.form-group {
+    margin-bottom: 17px;
+}
+
+.form-group label {
+    display: block;
+    color: #c5ccd7;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.form-input {
+    width: 100%;
+    padding: 13px 14px;
+    background: #080c13;
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    outline: none;
+    transition: .2s;
+}
+
+.form-input:focus {
+    border-color: rgba(22,131,255,.7);
+    box-shadow: 0 0 0 3px rgba(22,131,255,.08);
+}
+
+.auth-button {
+    width: 100%;
+    border: 0;
+    border-radius: 10px;
+    padding: 14px;
+    background: var(--blue);
+    color: white;
+    font-weight: 800;
+    transition: .2s;
+}
+
+.auth-button:hover {
+    background: var(--blue-2);
+    transform: translateY(-1px);
+}
+
+.auth-secondary {
+    text-align: center;
+    margin-top: 20px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.auth-link {
+    color: var(--blue-2);
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.auth-link:hover {
+    text-decoration: underline;
+}
+
+.forgot {
+    display: block;
+    text-align: right;
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: -8px;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.forgot:hover {
+    color: var(--blue-2);
+}
+
+.auth-notice {
+    margin-top: 18px;
+    padding: 11px 12px;
+    border-radius: 9px;
+    background: rgba(22,131,255,.07);
+    border: 1px solid rgba(22,131,255,.15);
+    color: #9fcfff;
+    font-size: 11px;
+    line-height: 1.5;
+    display: none;
+}
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+#app {
+    display: none;
+}
 
 .sidebar {
-    width: 255px;
-    background: var(--sidebar);
-    border-right: 1px solid var(--border);
     position: fixed;
-    inset: 0 auto 0 0;
-    display: flex;
-    flex-direction: column;
-    z-index: 100;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: var(--sidebar);
+    background: #080c13;
+    border-right: 1px solid var(--border);
+    padding: 24px 15px;
+    z-index: 20;
 }
 
-.brand {
-    height: 76px;
+.logo {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 0 22px;
-    border-bottom: 1px solid var(--border);
+    gap: 11px;
+    padding: 4px 10px 28px;
 }
 
 .logo-mark {
@@ -108,209 +274,183 @@ a {
     border: 2px solid var(--blue);
     border-radius: 50%;
     position: relative;
-    box-shadow: 0 0 18px rgba(61,140,255,.18);
+    box-shadow: 0 0 20px rgba(22,131,255,.2);
 }
 
 .logo-mark::after {
     content: "";
     position: absolute;
-    width: 9px;
-    height: 9px;
-    background: var(--blue);
+    width: 13px;
+    height: 13px;
+    background: #080c13;
     border-radius: 50%;
-    top: 3px;
-    right: -2px;
-    box-shadow: 0 0 12px var(--blue);
+    left: 8px;
+    top: 8px;
 }
 
-.brand-text {
-    font-size: 15px;
+.logo-text {
+    font-size: 14px;
     font-weight: 800;
-    letter-spacing: .08em;
+    letter-spacing: .12em;
+}
+
+.business-name {
+    margin: 0 8px 20px;
+    padding: 13px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 11px;
+}
+
+.business-name span {
+    display: block;
+    color: var(--muted);
+    font-size: 9px;
+    font-family: "IBM Plex Mono", monospace;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    margin-bottom: 5px;
+}
+
+.business-name strong {
+    font-size: 13px;
 }
 
 .nav {
-    padding: 22px 12px;
-    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
-.nav-label {
-    font-family: "IBM Plex Mono", monospace;
-    color: var(--muted-2);
-    font-size: 10px;
-    letter-spacing: .14em;
-    padding: 0 12px 10px;
-}
-
-.nav-item {
+.nav-button {
     width: 100%;
     border: 0;
     background: transparent;
     color: var(--muted);
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    text-align: left;
     padding: 11px 12px;
     border-radius: 9px;
-    margin-bottom: 3px;
-    text-align: left;
-    transition: .2s ease;
+    font-size: 13px;
+    transition: .18s;
 }
 
-.nav-item:hover {
+.nav-button:hover {
     color: var(--text);
     background: rgba(255,255,255,.035);
 }
 
-.nav-item.active {
-    color: var(--text);
-    background: var(--blue-soft);
-}
-
-.nav-icon {
-    width: 19px;
-    text-align: center;
-    font-size: 15px;
-}
-
-.nav-item.active .nav-icon {
-    color: var(--blue-bright);
+.nav-button.active {
+    color: white;
+    background: rgba(22,131,255,.11);
+    border: 1px solid rgba(22,131,255,.16);
 }
 
 .sidebar-bottom {
-    padding: 14px;
-    border-top: 1px solid var(--border);
+    position: absolute;
+    bottom: 20px;
+    left: 15px;
+    right: 15px;
 }
 
-.status-card {
+.status {
     padding: 13px;
-    border: 1px solid rgba(54,217,139,.18);
-    background: rgba(54,217,139,.045);
     border-radius: 10px;
-    margin-bottom: 12px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    margin-bottom: 10px;
 }
 
 .status-top {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 12px;
+    gap: 7px;
+    font-size: 11px;
     font-weight: 700;
 }
 
-.status-dot {
+.dot {
     width: 8px;
     height: 8px;
-    background: var(--green);
     border-radius: 50%;
-    box-shadow: 0 0 10px rgba(54,217,139,.7);
+    background: var(--green);
+    box-shadow: 0 0 10px rgba(50,213,131,.55);
 }
 
-.status-sub {
-    font-size: 10px;
+.status small {
+    display: block;
     color: var(--muted);
-    margin-top: 6px;
+    margin-top: 5px;
+    font-size: 10px;
 }
 
-.profile {
+.logout-button {
+    width: 100%;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    padding: 10px;
+    border-radius: 9px;
+    font-size: 12px;
+}
+
+.logout-button:hover {
+    color: white;
+    border-color: rgba(255,255,255,.18);
+}
+
+.main {
+    margin-left: var(--sidebar);
+    min-height: 100vh;
+}
+
+.topbar {
+    height: 72px;
+    border-bottom: 1px solid var(--border);
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 8px;
+    justify-content: space-between;
+    padding: 0 32px;
+    position: sticky;
+    top: 0;
+    background: rgba(7,10,16,.88);
+    backdrop-filter: blur(16px);
+    z-index: 10;
+}
+
+.page-title {
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.top-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.notification-button {
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: white;
+    width: 35px;
+    height: 35px;
+    border-radius: 9px;
 }
 
 .avatar {
     width: 35px;
     height: 35px;
     border-radius: 50%;
-    background: var(--panel-2);
-    border: 1px solid var(--border);
+    background: linear-gradient(135deg,#1683ff,#124e8f);
     display: grid;
     place-items: center;
     font-size: 12px;
     font-weight: 800;
 }
 
-.profile-info {
-    flex: 1;
-    min-width: 0;
-}
-
-.profile-name {
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.profile-business {
-    font-size: 10px;
-    color: var(--muted);
-    margin-top: 2px;
-}
-
-/* =========================
-   MAIN
-========================= */
-
-.main {
-    margin-left: 255px;
-    width: calc(100% - 255px);
-    min-height: 100vh;
-}
-
-.topbar {
-    height: 76px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 32px;
-    background: rgba(7,10,16,.85);
-    backdrop-filter: blur(16px);
-    position: sticky;
-    top: 0;
-    z-index: 50;
-}
-
-.page-title {
-    font-size: 18px;
-    font-weight: 800;
-}
-
-.page-subtitle {
-    color: var(--muted);
-    font-size: 11px;
-    margin-top: 3px;
-}
-
-.top-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.icon-button {
-    width: 38px;
-    height: 38px;
-    border-radius: 9px;
-    border: 1px solid var(--border);
-    background: var(--panel);
-    color: var(--muted);
-    transition: .2s ease;
-}
-
-.icon-button:hover {
-    color: var(--text);
-    border-color: var(--border-hover);
-}
-
 .content {
-    padding: 30px 32px 50px;
-    max-width: 1500px;
+    padding: 30px 32px 60px;
 }
-
-/* =========================
-   VIEWS
-========================= */
 
 .view {
     display: none;
@@ -320,118 +460,71 @@ a {
     display: block;
 }
 
-/* =========================
-   DASHBOARD HERO
-========================= */
-
-.welcome {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
+.page-heading {
     margin-bottom: 25px;
 }
 
-.welcome h1 {
-    font-size: clamp(25px, 3vw, 36px);
-    letter-spacing: -.035em;
+.page-heading h1 {
+    font-size: 27px;
+    margin-bottom: 6px;
 }
 
-.welcome p {
+.page-heading p {
     color: var(--muted);
     font-size: 13px;
-    margin-top: 7px;
 }
 
-.date-label {
-    color: var(--muted);
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 11px;
-}
+/* cards */
 
-/* =========================
-   METRICS
-========================= */
-
-.metrics {
+.grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 13px;
-    margin-bottom: 20px;
+    gap: 15px;
+}
+
+.grid-4 {
+    grid-template-columns: repeat(4,1fr);
+}
+
+.grid-3 {
+    grid-template-columns: repeat(3,1fr);
 }
 
 .metric {
     background: var(--panel);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    transition: .2s ease;
-}
-
-.metric:hover {
-    border-color: var(--border-hover);
-    transform: translateY(-1px);
-}
-
-.metric-head {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    border-radius: 13px;
+    padding: 19px;
 }
 
 .metric-label {
     color: var(--muted);
     font-size: 11px;
-    font-weight: 600;
-}
-
-.metric-icon {
-    width: 29px;
-    height: 29px;
-    border-radius: 7px;
-    background: var(--blue-soft);
-    display: grid;
-    place-items: center;
-    color: var(--blue-bright);
-    font-size: 12px;
+    margin-bottom: 10px;
 }
 
 .metric-value {
-    font-size: 28px;
+    font-size: 25px;
     font-weight: 800;
-    margin-top: 15px;
-    letter-spacing: -.04em;
 }
 
 .metric-change {
-    margin-top: 5px;
+    margin-top: 8px;
     font-size: 10px;
     color: var(--green);
-}
-
-/* =========================
-   GRID
-========================= */
-
-.dashboard-grid {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr;
-    gap: 15px;
 }
 
 .panel {
     background: var(--panel);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
+    border-radius: 13px;
+    padding: 20px;
 }
 
-.panel-head {
-    min-height: 61px;
-    padding: 0 19px;
-    border-bottom: 1px solid var(--border);
+.panel-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-bottom: 17px;
 }
 
 .panel-title {
@@ -440,210 +533,14 @@ a {
 }
 
 .panel-link {
-    border: 0;
-    background: transparent;
-    color: var(--blue-bright);
-    font-size: 10px;
-    font-weight: 700;
-}
-
-.panel-body {
-    padding: 18px;
-}
-
-/* =========================
-   APPOINTMENTS
-========================= */
-
-.appointment {
-    display: flex;
-    align-items: center;
-    gap: 13px;
-    padding: 13px 0;
-    border-bottom: 1px solid rgba(255,255,255,.055);
-}
-
-.appointment:last-child {
-    border-bottom: 0;
-}
-
-.time {
-    width: 55px;
-    font-family: "IBM Plex Mono", monospace;
-    color: var(--muted);
-    font-size: 10px;
-}
-
-.customer-avatar {
-    width: 35px;
-    height: 35px;
-    border-radius: 9px;
-    background: #141b27;
-    display: grid;
-    place-items: center;
+    color: var(--blue-2);
     font-size: 11px;
-    font-weight: 800;
+    cursor: pointer;
 }
 
-.appt-info {
-    flex: 1;
-}
-
-.appt-name {
-    font-size: 12px;
-    font-weight: 700;
-}
-
-.appt-service {
-    color: var(--muted);
-    font-size: 10px;
-    margin-top: 3px;
-}
-
-.badge {
-    padding: 5px 8px;
-    border-radius: 6px;
-    font-size: 9px;
-    font-weight: 700;
-}
-
-.badge.confirmed {
-    background: rgba(54,217,139,.08);
-    color: var(--green);
-}
-
-.badge.pending {
-    background: rgba(242,201,76,.08);
-    color: var(--yellow);
-}
-
-/* =========================
-   ACTIVITY
-========================= */
-
-.activity {
-    display: flex;
-    gap: 12px;
-    padding: 13px 0;
-    border-bottom: 1px solid rgba(255,255,255,.055);
-}
-
-.activity:last-child {
-    border-bottom: 0;
-}
-
-.activity-icon {
-    width: 31px;
-    height: 31px;
-    border-radius: 8px;
-    background: var(--blue-soft);
-    color: var(--blue-bright);
-    display: grid;
-    place-items: center;
-    flex-shrink: 0;
-    font-size: 11px;
-}
-
-.activity-text {
-    font-size: 11px;
-    line-height: 1.45;
-}
-
-.activity-time {
-    color: var(--muted-2);
-    font-family: "IBM Plex Mono", monospace;
-    font-size: 9px;
-    margin-top: 3px;
-}
-
-/* =========================
-   AI EMPLOYEE PANEL
-========================= */
-
-.employee-card {
+.dashboard-grid {
     margin-top: 15px;
-    padding: 19px;
-    border: 1px solid rgba(61,140,255,.17);
-    background:
-        radial-gradient(circle at 90% 0%, rgba(61,140,255,.12), transparent 40%),
-        var(--panel);
-    border-radius: var(--radius);
-}
-
-.employee-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.employee-title {
-    display: flex;
-    align-items: center;
-    gap: 11px;
-}
-
-.employee-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 11px;
-    background: var(--blue-soft);
-    color: var(--blue-bright);
-    display: grid;
-    place-items: center;
-    font-size: 18px;
-}
-
-.employee-name {
-    font-size: 13px;
-    font-weight: 800;
-}
-
-.employee-role {
-    font-size: 10px;
-    color: var(--muted);
-    margin-top: 3px;
-}
-
-.online {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--green);
-    font-size: 10px;
-    font-weight: 700;
-}
-
-.employee-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-    margin-top: 18px;
-}
-
-.employee-stat {
-    background: rgba(255,255,255,.025);
-    border: 1px solid rgba(255,255,255,.05);
-    padding: 12px;
-    border-radius: 8px;
-}
-
-.employee-stat-value {
-    font-size: 17px;
-    font-weight: 800;
-}
-
-.employee-stat-label {
-    color: var(--muted);
-    font-size: 9px;
-    margin-top: 3px;
-}
-
-/* =========================
-   TABLES
-========================= */
-
-.table-panel {
-    margin-top: 20px;
+    grid-template-columns: 1.35fr 1fr;
 }
 
 .table-wrap {
@@ -656,299 +553,280 @@ table {
 }
 
 th {
-    color: var(--muted-2);
-    text-align: left;
+    color: var(--muted);
     font-family: "IBM Plex Mono", monospace;
     font-size: 9px;
     font-weight: 500;
+    text-align: left;
     text-transform: uppercase;
-    letter-spacing: .07em;
-    padding: 13px 18px;
+    padding: 10px;
     border-bottom: 1px solid var(--border);
 }
 
 td {
-    padding: 15px 18px;
+    padding: 13px 10px;
     border-bottom: 1px solid rgba(255,255,255,.045);
-    font-size: 11px;
+    font-size: 12px;
 }
 
-td strong {
-    font-size: 11px;
+tr:last-child td {
+    border-bottom: 0;
 }
 
-.table-muted {
-    color: var(--muted);
-}
-
-.call-result {
-    color: var(--green);
-    font-size: 10px;
+.badge {
+    display: inline-flex;
+    padding: 5px 8px;
+    border-radius: 999px;
+    font-size: 9px;
     font-weight: 700;
 }
 
-/* =========================
-   SEARCH
-========================= */
-
-.search-row {
-    display: flex;
-    gap: 9px;
-    margin-bottom: 15px;
+.badge.green {
+    color: #75e9ad;
+    background: rgba(50,213,131,.09);
 }
 
+.badge.blue {
+    color: #82bdff;
+    background: rgba(22,131,255,.1);
+}
+
+.badge.yellow {
+    color: #f5d477;
+    background: rgba(245,196,81,.1);
+}
+
+.badge.red {
+    color: #ff8c96;
+    background: rgba(255,95,109,.1);
+}
+
+.activity {
+    display: flex;
+    flex-direction: column;
+}
+
+.activity-item {
+    padding: 12px 0;
+    border-bottom: 1px solid rgba(255,255,255,.05);
+}
+
+.activity-item:last-child {
+    border-bottom: 0;
+}
+
+.activity-item strong {
+    font-size: 12px;
+}
+
+.activity-item span {
+    display: block;
+    color: var(--muted);
+    font-size: 10px;
+    margin-top: 3px;
+}
+
+/* search */
+
 .search {
-    flex: 1;
+    width: 230px;
     background: var(--panel);
     border: 1px solid var(--border);
+    color: white;
+    padding: 10px 12px;
     border-radius: 9px;
-    color: var(--text);
-    padding: 10px 13px;
     outline: none;
     font-size: 11px;
 }
 
 .search:focus {
-    border-color: rgba(61,140,255,.45);
+    border-color: rgba(22,131,255,.5);
 }
 
-.select {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: 9px;
-    color: var(--text);
-    padding: 10px 13px;
-    outline: none;
-    font-size: 11px;
-}
+/* controls */
 
-/* =========================
-   BUTTONS
-========================= */
+.controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 15px;
+}
 
 .primary-button {
     border: 0;
-    background: var(--blue);
+    border-radius: 9px;
+    padding: 10px 14px;
     color: white;
-    padding: 10px 15px;
-    border-radius: 8px;
-    font-size: 10px;
+    background: var(--blue);
+    font-size: 11px;
     font-weight: 800;
-    transition: .2s ease;
-}
-
-.primary-button:hover {
-    background: var(--blue-bright);
-    transform: translateY(-1px);
 }
 
 .secondary-button {
     border: 1px solid var(--border);
     background: var(--panel);
-    color: var(--text);
-    padding: 10px 15px;
-    border-radius: 8px;
-    font-size: 10px;
-    font-weight: 700;
+    color: white;
+    border-radius: 9px;
+    padding: 10px 14px;
+    font-size: 11px;
 }
 
-/* =========================
-   AI CONTROL CENTER
-========================= */
+/* AI employee */
 
-.settings-layout {
-    display: grid;
-    grid-template-columns: 220px 1fr;
-    gap: 15px;
-}
-
-.settings-menu {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 10px;
-    height: fit-content;
-}
-
-.settings-menu button {
-    width: 100%;
-    border: 0;
-    background: transparent;
-    color: var(--muted);
-    text-align: left;
-    padding: 10px;
-    border-radius: 7px;
-    font-size: 10px;
-}
-
-.settings-menu button.active,
-.settings-menu button:hover {
-    color: var(--text);
-    background: var(--blue-soft);
-}
-
-.settings-content {
-    background: var(--panel);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 24px;
-}
-
-.settings-section {
-    margin-bottom: 28px;
-}
-
-.settings-section:last-child {
-    margin-bottom: 0;
-}
-
-.settings-section h3 {
-    font-size: 14px;
-    margin-bottom: 5px;
-}
-
-.settings-section p {
-    color: var(--muted);
-    font-size: 10px;
+.employee-status {
+    padding: 18px;
+    border: 1px solid rgba(50,213,131,.16);
+    background: rgba(50,213,131,.05);
+    border-radius: 13px;
     margin-bottom: 18px;
 }
 
-.form-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 13px;
+.employee-status strong {
+    display: block;
+    margin-bottom: 4px;
 }
 
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.form-group.full {
-    grid-column: 1 / -1;
-}
-
-.form-group label {
+.employee-status span {
     color: var(--muted);
-    font-size: 9px;
-    font-weight: 700;
+    font-size: 11px;
 }
 
-.form-group input,
-.form-group textarea,
-.form-group select {
-    width: 100%;
-    background: #090e16;
+.settings-grid {
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+    gap: 15px;
+}
+
+.setting-card {
+    background: var(--panel);
     border: 1px solid var(--border);
-    color: var(--text);
-    border-radius: 8px;
-    padding: 11px;
-    outline: none;
-    font-size: 10px;
+    border-radius: 13px;
+    padding: 20px;
 }
 
-.form-group textarea {
+.setting-card h3 {
+    font-size: 13px;
+    margin-bottom: 5px;
+}
+
+.setting-card p {
+    color: var(--muted);
+    font-size: 11px;
+    margin-bottom: 15px;
+}
+
+.setting-input,
+.setting-textarea,
+.setting-select {
+    width: 100%;
+    background: #080c13;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: white;
+    padding: 10px;
+    outline: none;
+}
+
+.setting-textarea {
     min-height: 100px;
     resize: vertical;
 }
 
-.form-group input:focus,
-.form-group textarea:focus,
-.form-group select:focus {
-    border-color: rgba(61,140,255,.45);
+.setting-input:focus,
+.setting-textarea:focus,
+.setting-select:focus {
+    border-color: rgba(22,131,255,.5);
 }
 
-/* =========================
-   PERFORMANCE
-========================= */
+/* notification */
 
-.performance-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-}
-
-.progress-row {
-    margin-bottom: 17px;
-}
-
-.progress-row:last-child {
-    margin-bottom: 0;
-}
-
-.progress-label {
+.notification-item {
     display: flex;
-    justify-content: space-between;
-    font-size: 10px;
-    margin-bottom: 7px;
+    align-items: flex-start;
+    gap: 13px;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(255,255,255,.05);
 }
 
-.progress-label span:last-child {
+.notification-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    background: rgba(22,131,255,.09);
+}
+
+.notification-item strong {
+    font-size: 12px;
+}
+
+.notification-item p {
     color: var(--muted);
+    font-size: 10px;
+    margin-top: 3px;
 }
 
-.progress-bar {
-    height: 6px;
-    background: rgba(255,255,255,.06);
-    border-radius: 99px;
-    overflow: hidden;
-}
-
-.progress-fill {
-    height: 100%;
-    background: var(--blue);
-    border-radius: inherit;
-}
-
-/* =========================
-   BILLING
-========================= */
+/* billing */
 
 .plan-card {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px;
-    border: 1px solid rgba(61,140,255,.2);
-    background: var(--blue-soft);
-    border-radius: 12px;
-    margin-bottom: 15px;
+    max-width: 600px;
+    border: 1px solid rgba(22,131,255,.25);
+    background: linear-gradient(145deg,rgba(22,131,255,.08),var(--panel));
+    border-radius: 15px;
+    padding: 25px;
 }
 
-.plan-name {
-    font-size: 16px;
-    font-weight: 800;
-}
-
-.plan-status {
-    color: var(--green);
-    font-size: 10px;
-    margin-top: 5px;
+.plan-card h2 {
+    font-size: 22px;
+    margin-bottom: 6px;
 }
 
 .plan-price {
-    font-size: 21px;
+    font-size: 32px;
     font-weight: 800;
+    margin: 15px 0;
 }
 
 .plan-price span {
     color: var(--muted);
-    font-size: 9px;
+    font-size: 12px;
     font-weight: 500;
 }
 
-/* =========================
-   MOBILE
-========================= */
+.feature-list {
+    list-style: none;
+    margin: 20px 0;
+}
+
+.feature-list li {
+    color: #c9d0da;
+    font-size: 12px;
+    margin: 9px 0;
+}
+
+.feature-list li::before {
+    content: "✓";
+    color: var(--green);
+    margin-right: 8px;
+}
+
+/* mobile */
 
 .mobile-menu {
     display: none;
+    border: 1px solid var(--border);
+    background: var(--panel);
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
 }
 
-@media (max-width: 1100px) {
-    .metrics {
-        grid-template-columns: repeat(2, 1fr);
+@media(max-width:1050px) {
+    .grid-4 {
+        grid-template-columns: repeat(2,1fr);
     }
 
     .dashboard-grid {
@@ -956,10 +834,15 @@ td strong {
     }
 }
 
-@media (max-width: 800px) {
+@media(max-width:760px) {
+    :root {
+        --sidebar: 0px;
+    }
+
     .sidebar {
+        width: 260px;
         transform: translateX(-100%);
-        transition: .25s ease;
+        transition: transform .25s;
     }
 
     .sidebar.open {
@@ -968,7 +851,6 @@ td strong {
 
     .main {
         margin-left: 0;
-        width: 100%;
     }
 
     .mobile-menu {
@@ -980,46 +862,26 @@ td strong {
     }
 
     .content {
-        padding: 22px 18px 40px;
+        padding: 22px 17px 45px;
     }
 
-    .settings-layout {
+    .grid-4,
+    .grid-3,
+    .settings-grid {
         grid-template-columns: 1fr;
     }
 
-    .performance-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (max-width: 560px) {
-    .metrics {
-        grid-template-columns: 1fr;
+    .controls {
+        align-items: stretch;
+        flex-direction: column;
     }
 
-    .welcome {
-        display: block;
+    .search {
+        width: 100%;
     }
 
-    .date-label {
-        margin-top: 12px;
-        display: block;
-    }
-
-    .form-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .form-group.full {
-        grid-column: auto;
-    }
-
-    .employee-stats {
-        grid-template-columns: 1fr;
-    }
-
-    .page-title {
-        font-size: 15px;
+    .auth-box {
+        padding: 24px;
     }
 }
 </style>
@@ -1027,74 +889,233 @@ td strong {
 
 <body>
 
-<div class="app">
+<!-- =========================================================
+     AUTHENTICATION FRONT DOOR
+========================================================= -->
 
-    <!-- =========================
-         SIDEBAR
-    ========================== -->
+<section id="auth-screen">
+
+    <div class="auth-glow"></div>
+
+    <div class="auth-card">
+
+        <div class="auth-logo">
+            <div class="auth-logo-mark"></div>
+            <h1>OFFICEWARD</h1>
+            <p>AI EMPLOYEES FOR SMALL BUSINESSES</p>
+        </div>
+
+        <div class="auth-box">
+
+            <!-- SIGN IN -->
+
+            <div id="signin-form" class="auth-form active">
+
+                <h2>Welcome back.</h2>
+                <p class="auth-subtitle">
+                    Sign in to your OfficeWard business dashboard.
+                </p>
+
+                <div class="form-group">
+                    <label for="signin-email">Email</label>
+                    <input
+                        id="signin-email"
+                        class="form-input"
+                        type="email"
+                        placeholder="you@business.com"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="signin-password">Password</label>
+                    <input
+                        id="signin-password"
+                        class="form-input"
+                        type="password"
+                        placeholder="Enter your password"
+                    >
+                </div>
+
+                <span class="forgot" onclick="showForgot()">
+                    Forgot password?
+                </span>
+
+                <button class="auth-button" onclick="demoSignIn()">
+                    Sign In
+                </button>
+
+                <div class="auth-secondary">
+                    New to OfficeWard?
+                    <span class="auth-link" onclick="showSignUp()">
+                        Create an account
+                    </span>
+                </div>
+
+                <div id="signin-notice" class="auth-notice">
+                    Demo authentication is currently active. Real account
+                    verification will be connected to the OfficeWard backend.
+                </div>
+
+            </div>
+
+            <!-- SIGN UP -->
+
+            <div id="signup-form" class="auth-form">
+
+                <h2>Create your account.</h2>
+                <p class="auth-subtitle">
+                    Start your OfficeWard business account.
+                </p>
+
+                <div class="form-group">
+                    <label for="signup-business">Business name</label>
+                    <input
+                        id="signup-business"
+                        class="form-input"
+                        type="text"
+                        placeholder="Your Business"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-email">Email</label>
+                    <input
+                        id="signup-email"
+                        class="form-input"
+                        type="email"
+                        placeholder="you@business.com"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="signup-password">Password</label>
+                    <input
+                        id="signup-password"
+                        class="form-input"
+                        type="password"
+                        placeholder="Create a password"
+                    >
+                </div>
+
+                <button class="auth-button" onclick="demoSignUp()">
+                    Continue to Subscription
+                </button>
+
+                <div class="auth-secondary">
+                    Already have an account?
+                    <span class="auth-link" onclick="showSignIn()">
+                        Sign in
+                    </span>
+                </div>
+
+                <div id="signup-notice" class="auth-notice">
+                    The next production step is connecting this button to
+                    Stripe Checkout and verifying the subscription through
+                    the OfficeWard backend.
+                </div>
+
+            </div>
+
+            <!-- FORGOT PASSWORD -->
+
+            <div id="forgot-form" class="auth-form">
+
+                <h2>Reset your password.</h2>
+                <p class="auth-subtitle">
+                    Enter your account email to request a password reset.
+                </p>
+
+                <div class="form-group">
+                    <label for="forgot-email">Email</label>
+                    <input
+                        id="forgot-email"
+                        class="form-input"
+                        type="email"
+                        placeholder="you@business.com"
+                    >
+                </div>
+
+                <button class="auth-button" onclick="demoForgot()">
+                    Send Reset Request
+                </button>
+
+                <div class="auth-secondary">
+                    <span class="auth-link" onclick="showSignIn()">
+                        Back to Sign In
+                    </span>
+                </div>
+
+                <div id="forgot-notice" class="auth-notice">
+                    Password reset will be connected to the production
+                    authentication backend.
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     OFFICEWARD DASHBOARD
+========================================================= -->
+
+<div id="app">
 
     <aside class="sidebar" id="sidebar">
 
-        <div class="brand">
+        <div class="logo">
             <div class="logo-mark"></div>
-            <div class="brand-text">OFFICEWARD</div>
+            <div class="logo-text">OFFICEWARD</div>
+        </div>
+
+        <div class="business-name">
+            <span>Business</span>
+            <strong id="business-display">Velocity Barber</strong>
         </div>
 
         <nav class="nav">
 
-            <div class="nav-label">WORKSPACE</div>
-
-            <button class="nav-item active" data-view="dashboard">
-                <span class="nav-icon">⌂</span>
+            <button class="nav-button active" onclick="showView('dashboard',this)">
                 Dashboard
             </button>
 
-            <button class="nav-item" data-view="appointments">
-                <span class="nav-icon">▣</span>
+            <button class="nav-button" onclick="showView('appointments',this)">
                 Appointments
             </button>
 
-            <button class="nav-item" data-view="customers">
-                <span class="nav-icon">◉</span>
+            <button class="nav-button" onclick="showView('customers',this)">
                 Customers
             </button>
 
-            <button class="nav-item" data-view="leads">
-                <span class="nav-icon">◇</span>
+            <button class="nav-button" onclick="showView('leads',this)">
                 Leads
             </button>
 
-            <button class="nav-item" data-view="calls">
-                <span class="nav-icon">◌</span>
+            <button class="nav-button" onclick="showView('calls',this)">
                 Calls
             </button>
 
-            <div class="nav-label" style="margin-top:22px;">EMPLOYEE</div>
-
-            <button class="nav-item" data-view="employee">
-                <span class="nav-icon">✦</span>
+            <button class="nav-button" onclick="showView('employee',this)">
                 AI Employee
             </button>
 
-            <button class="nav-item" data-view="performance">
-                <span class="nav-icon">↗</span>
+            <button class="nav-button" onclick="showView('performance',this)">
                 Performance
             </button>
 
-            <button class="nav-item" data-view="notifications">
-                <span class="nav-icon">◔</span>
+            <button class="nav-button" onclick="showView('notifications',this)">
                 Notifications
             </button>
 
-            <div class="nav-label" style="margin-top:22px;">ACCOUNT</div>
-
-            <button class="nav-item" data-view="settings">
-                <span class="nav-icon">⚙</span>
+            <button class="nav-button" onclick="showView('settings',this)">
                 Settings
             </button>
 
-            <button class="nav-item" data-view="billing">
-                <span class="nav-icon">$</span>
+            <button class="nav-button" onclick="showView('subscription',this)">
                 Subscription
             </button>
 
@@ -1102,306 +1123,184 @@ td strong {
 
         <div class="sidebar-bottom">
 
-            <div class="status-card">
+            <div class="status">
                 <div class="status-top">
-                    <span class="status-dot"></span>
-                    OfficeWard is online
+                    <span class="dot"></span>
+                    OfficeWard Online
                 </div>
-
-                <div class="status-sub">
-                    AI Employee operating normally
-                </div>
+                <small>AI Employee operating normally</small>
             </div>
 
-            <div class="profile">
-                <div class="avatar">VB</div>
-
-                <div class="profile-info">
-                    <div class="profile-name">Velocity Barber</div>
-                    <div class="profile-business">Business account</div>
-                </div>
-            </div>
+            <button class="logout-button" onclick="logout()">
+                Log out
+            </button>
 
         </div>
 
     </aside>
 
 
-    <!-- =========================
-         MAIN
-    ========================== -->
-
     <main class="main">
 
         <header class="topbar">
 
-            <div>
-                <div class="page-title" id="pageTitle">
-                    Dashboard
-                </div>
+            <div style="display:flex;align-items:center;gap:12px;">
 
-                <div class="page-subtitle">
-                    Velocity Barber
-                </div>
-            </div>
-
-            <div class="top-actions">
-
-                <button
-                    class="icon-button mobile-menu"
-                    id="mobileMenu">
+                <button class="mobile-menu" onclick="toggleSidebar()">
                     ☰
                 </button>
 
-                <button class="icon-button">
-                    ◔
+                <div class="page-title" id="page-title">
+                    Dashboard
+                </div>
+
+            </div>
+
+            <div class="top-right">
+
+                <button
+                    class="notification-button"
+                    onclick="showViewByName('notifications')"
+                >
+                    🔔
                 </button>
 
-                <button class="icon-button">
-                    ?
-                </button>
+                <div class="avatar" id="avatar">
+                    VB
+                </div>
 
             </div>
 
         </header>
 
 
-        <div class="content">
+        <section class="content">
 
-            <!-- =========================
+
+            <!-- =================================================
                  DASHBOARD
-            ========================== -->
+            ================================================== -->
 
-            <section class="view active" id="dashboard">
+            <div class="view active" id="view-dashboard">
 
-                <div class="welcome">
-                    <div>
-                        <h1>Good morning.</h1>
-                        <p>Here's what's happening with your business.</p>
-                    </div>
+                <div class="page-heading">
 
-                    <div class="date-label">
-                        SAT · SEP 5 · 2026
-                    </div>
+                    <h1>Good morning.</h1>
+
+                    <p>
+                        Here's what's happening with your business today.
+                    </p>
+
                 </div>
 
-
-                <div class="metrics">
+                <div class="grid grid-4">
 
                     <div class="metric">
-                        <div class="metric-head">
-                            <div class="metric-label">
-                                APPOINTMENTS
-                            </div>
-
-                            <div class="metric-icon">
-                                ▣
-                            </div>
-                        </div>
-
-                        <div class="metric-value">
-                            18
-                        </div>
-
-                        <div class="metric-change">
-                            ↑ 12% this week
-                        </div>
+                        <div class="metric-label">Today's Appointments</div>
+                        <div class="metric-value">8</div>
+                        <div class="metric-change">+2 from yesterday</div>
                     </div>
 
-
                     <div class="metric">
-                        <div class="metric-head">
-                            <div class="metric-label">
-                                LEADS
-                            </div>
-
-                            <div class="metric-icon">
-                                ◇
-                            </div>
-                        </div>
-
-                        <div class="metric-value">
-                            7
-                        </div>
-
-                        <div class="metric-change">
-                            ↑ 16% this week
-                        </div>
+                        <div class="metric-label">New Leads</div>
+                        <div class="metric-value">4</div>
+                        <div class="metric-change">+1 today</div>
                     </div>
 
-
                     <div class="metric">
-                        <div class="metric-head">
-                            <div class="metric-label">
-                                CUSTOMERS
-                            </div>
-
-                            <div class="metric-icon">
-                                ◉
-                            </div>
-                        </div>
-
-                        <div class="metric-value">
-                            143
-                        </div>
-
-                        <div class="metric-change">
-                            ↑ 8 new customers
-                        </div>
+                        <div class="metric-label">Calls Handled</div>
+                        <div class="metric-value">27</div>
+                        <div class="metric-change">94% successful</div>
                     </div>
 
-
                     <div class="metric">
-                        <div class="metric-head">
-                            <div class="metric-label">
-                                CALLS
-                            </div>
-
-                            <div class="metric-icon">
-                                ◌
-                            </div>
-                        </div>
-
-                        <div class="metric-value">
-                            31
-                        </div>
-
-                        <div class="metric-change">
-                            ↑ 9% this week
-                        </div>
+                        <div class="metric-label">Customers</div>
+                        <div class="metric-value">384</div>
+                        <div class="metric-change">+6 this week</div>
                     </div>
 
                 </div>
 
 
-                <div class="dashboard-grid">
+                <div class="grid dashboard-grid">
 
                     <div class="panel">
 
-                        <div class="panel-head">
-
+                        <div class="panel-header">
                             <div class="panel-title">
-                                Today's appointments
+                                Upcoming Appointments
                             </div>
 
-                            <button
+                            <span
                                 class="panel-link"
-                                onclick="switchView('appointments')">
+                                onclick="showViewByName('appointments')"
+                            >
                                 View all
-                            </button>
-
+                            </span>
                         </div>
 
+                        <div class="table-wrap">
 
-                        <div class="panel-body">
+                            <table>
 
-                            <div class="appointment">
+                                <thead>
+                                    <tr>
+                                        <th>Time</th>
+                                        <th>Customer</th>
+                                        <th>Service</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
 
-                                <div class="time">
-                                    9:00 AM
-                                </div>
+                                <tbody>
 
-                                <div class="customer-avatar">
-                                    JM
-                                </div>
+                                    <tr>
+                                        <td>9:30 AM</td>
+                                        <td>James Carter</td>
+                                        <td>Haircut</td>
+                                        <td>
+                                            <span class="badge green">
+                                                Confirmed
+                                            </span>
+                                        </td>
+                                    </tr>
 
-                                <div class="appt-info">
-                                    <div class="appt-name">
-                                        Jordan Miller
-                                    </div>
+                                    <tr>
+                                        <td>10:15 AM</td>
+                                        <td>Michael Reed</td>
+                                        <td>Fade</td>
+                                        <td>
+                                            <span class="badge green">
+                                                Confirmed
+                                            </span>
+                                        </td>
+                                    </tr>
 
-                                    <div class="appt-service">
-                                        Haircut
-                                    </div>
-                                </div>
+                                    <tr>
+                                        <td>11:00 AM</td>
+                                        <td>David Wilson</td>
+                                        <td>Haircut + Beard</td>
+                                        <td>
+                                            <span class="badge blue">
+                                                New
+                                            </span>
+                                        </td>
+                                    </tr>
 
-                                <div class="badge confirmed">
-                                    Confirmed
-                                </div>
+                                    <tr>
+                                        <td>12:30 PM</td>
+                                        <td>Alex Morgan</td>
+                                        <td>Haircut</td>
+                                        <td>
+                                            <span class="badge green">
+                                                Confirmed
+                                            </span>
+                                        </td>
+                                    </tr>
 
-                            </div>
+                                </tbody>
 
-
-                            <div class="appointment">
-
-                                <div class="time">
-                                    10:30 AM
-                                </div>
-
-                                <div class="customer-avatar">
-                                    AR
-                                </div>
-
-                                <div class="appt-info">
-                                    <div class="appt-name">
-                                        Alex Rivera
-                                    </div>
-
-                                    <div class="appt-service">
-                                        Haircut + Beard
-                                    </div>
-                                </div>
-
-                                <div class="badge confirmed">
-                                    Confirmed
-                                </div>
-
-                            </div>
-
-
-                            <div class="appointment">
-
-                                <div class="time">
-                                    12:00 PM
-                                </div>
-
-                                <div class="customer-avatar">
-                                    DK
-                                </div>
-
-                                <div class="appt-info">
-                                    <div class="appt-name">
-                                        Daniel Kim
-                                    </div>
-
-                                    <div class="appt-service">
-                                        Fade
-                                    </div>
-                                </div>
-
-                                <div class="badge pending">
-                                    Pending
-                                </div>
-
-                            </div>
-
-
-                            <div class="appointment">
-
-                                <div class="time">
-                                    2:30 PM
-                                </div>
-
-                                <div class="customer-avatar">
-                                    MS
-                                </div>
-
-                                <div class="appt-info">
-                                    <div class="appt-name">
-                                        Marcus Stone
-                                    </div>
-
-                                    <div class="appt-service">
-                                        Haircut
-                                    </div>
-
-                                </div>
-
-                                <div class="badge confirmed">
-                                    Confirmed
-                                </div>
-
-                            </div>
+                            </table>
 
                         </div>
 
@@ -1410,96 +1309,32 @@ td strong {
 
                     <div class="panel">
 
-                        <div class="panel-head">
-
+                        <div class="panel-header">
                             <div class="panel-title">
-                                Recent activity
+                                Recent Activity
                             </div>
-
-                            <button
-                                class="panel-link"
-                                onclick="switchView('calls')">
-                                View calls
-                            </button>
-
                         </div>
 
+                        <div class="activity">
 
-                        <div class="panel-body">
-
-                            <div class="activity">
-
-                                <div class="activity-icon">
-                                    ✓
-                                </div>
-
-                                <div>
-                                    <div class="activity-text">
-                                        OfficeWard booked an appointment for <strong>Jordan Miller</strong>.
-                                    </div>
-
-                                    <div class="activity-time">
-                                        8 MIN AGO
-                                    </div>
-                                </div>
-
+                            <div class="activity-item">
+                                <strong>Appointment booked</strong>
+                                <span>David Wilson • 4 minutes ago</span>
                             </div>
 
-
-                            <div class="activity">
-
-                                <div class="activity-icon">
-                                    +
-                                </div>
-
-                                <div>
-                                    <div class="activity-text">
-                                        New lead captured from a phone call.
-                                    </div>
-
-                                    <div class="activity-time">
-                                        24 MIN AGO
-                                    </div>
-                                </div>
-
+                            <div class="activity-item">
+                                <strong>New lead captured</strong>
+                                <span>Marcus Brown • 18 minutes ago</span>
                             </div>
 
-
-                            <div class="activity">
-
-                                <div class="activity-icon">
-                                    ↻
-                                </div>
-
-                                <div>
-                                    <div class="activity-text">
-                                        Alex Rivera's appointment was rescheduled.
-                                    </div>
-
-                                    <div class="activity-time">
-                                        41 MIN AGO
-                                    </div>
-                                </div>
-
+                            <div class="activity-item">
+                                <strong>Customer question answered</strong>
+                                <span>AI Employee • 31 minutes ago</span>
                             </div>
 
-
-                            <div class="activity">
-
-                                <div class="activity-icon">
-                                    ◉
-                                </div>
-
-                                <div>
-                                    <div class="activity-text">
-                                        Returning customer identified.
-                                    </div>
-
-                                    <div class="activity-time">
-                                        1 HR AGO
-                                    </div>
-                                </div>
-
+                            <div class="activity-item">
+                                <strong>Appointment rescheduled</strong>
+                                <span>James Carter • 48 minutes ago</span>
                             </div>
 
                         </div>
@@ -1508,117 +1343,46 @@ td strong {
 
                 </div>
 
-
-                <div class="employee-card">
-
-                    <div class="employee-top">
-
-                        <div class="employee-title">
-
-                            <div class="employee-icon">
-                                ✦
-                            </div>
-
-                            <div>
-                                <div class="employee-name">
-                                    OfficeWard AI Employee
-                                </div>
-
-                                <div class="employee-role">
-                                    Your business's AI phone employee
-                                </div>
-                            </div>
-
-                        </div>
-
-                        <div class="online">
-                            <span class="status-dot"></span>
-                            ONLINE
-                        </div>
-
-                    </div>
+            </div>
 
 
-                    <div class="employee-stats">
-
-                        <div class="employee-stat">
-                            <div class="employee-stat-value">
-                                31
-                            </div>
-                            <div class="employee-stat-label">
-                                Calls handled
-                            </div>
-                        </div>
-
-                        <div class="employee-stat">
-                            <div class="employee-stat-value">
-                                18
-                            </div>
-                            <div class="employee-stat-label">
-                                Appointments booked
-                            </div>
-                        </div>
-
-                        <div class="employee-stat">
-                            <div class="employee-stat-value">
-                                7
-                            </div>
-                            <div class="employee-stat-label">
-                                Leads captured
-                            </div>
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <!-- =========================
+            <!-- =================================================
                  APPOINTMENTS
-            ========================== -->
+            ================================================== -->
 
-            <section class="view" id="appointments">
+            <div class="view" id="view-appointments">
 
-                <div class="welcome">
-                    <div>
-                        <h1>Appointments</h1>
-                        <p>Manage your business appointments.</p>
-                    </div>
-
-                    <button class="primary-button">
-                        + New appointment
-                    </button>
+                <div class="page-heading">
+                    <h1>Appointments</h1>
+                    <p>Manage your upcoming and past appointments.</p>
                 </div>
 
+                <div class="controls">
 
-                <div class="search-row">
                     <input
                         class="search"
-                        placeholder="Search appointments...">
+                        placeholder="Search appointments..."
+                        oninput="filterTable(this,'appointments-table')"
+                    >
 
-                    <select class="select">
-                        <option>All appointments</option>
-                        <option>Confirmed</option>
-                        <option>Pending</option>
-                        <option>Cancelled</option>
-                    </select>
+                    <button class="primary-button">
+                        + New Appointment
+                    </button>
+
                 </div>
 
-
-                <div class="panel table-panel">
+                <div class="panel">
 
                     <div class="table-wrap">
 
-                        <table>
+                        <table id="appointments-table">
 
                             <thead>
                                 <tr>
-                                    <th>Customer</th>
-                                    <th>Service</th>
                                     <th>Date</th>
                                     <th>Time</th>
+                                    <th>Customer</th>
+                                    <th>Service</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
@@ -1626,35 +1390,27 @@ td strong {
                             <tbody>
 
                                 <tr>
-                                    <td><strong>Jordan Miller</strong></td>
-                                    <td class="table-muted">Haircut</td>
-                                    <td class="table-muted">Sep 5</td>
-                                    <td class="table-muted">9:00 AM</td>
-                                    <td><span class="badge confirmed">Confirmed</span></td>
+                                    <td>Today</td>
+                                    <td>9:30 AM</td>
+                                    <td>James Carter</td>
+                                    <td>Haircut</td>
+                                    <td><span class="badge green">Confirmed</span></td>
                                 </tr>
 
                                 <tr>
-                                    <td><strong>Alex Rivera</strong></td>
-                                    <td class="table-muted">Haircut + Beard</td>
-                                    <td class="table-muted">Sep 5</td>
-                                    <td class="table-muted">10:30 AM</td>
-                                    <td><span class="badge confirmed">Confirmed</span></td>
+                                    <td>Today</td>
+                                    <td>10:15 AM</td>
+                                    <td>Michael Reed</td>
+                                    <td>Fade</td>
+                                    <td><span class="badge green">Confirmed</span></td>
                                 </tr>
 
                                 <tr>
-                                    <td><strong>Daniel Kim</strong></td>
-                                    <td class="table-muted">Fade</td>
-                                    <td class="table-muted">Sep 5</td>
-                                    <td class="table-muted">12:00 PM</td>
-                                    <td><span class="badge pending">Pending</span></td>
-                                </tr>
-
-                                <tr>
-                                    <td><strong>Marcus Stone</strong></td>
-                                    <td class="table-muted">Haircut</td>
-                                    <td class="table-muted">Sep 5</td>
-                                    <td class="table-muted">2:30 PM</td>
-                                    <td><span class="badge confirmed">Confirmed</span></td>
+                                    <td>Tomorrow</td>
+                                    <td>1:00 PM</td>
+                                    <td>Marcus Brown</td>
+                                    <td>Beard Trim</td>
+                                    <td><span class="badge blue">New</span></td>
                                 </tr>
 
                             </tbody>
@@ -1665,118 +1421,46 @@ td strong {
 
                 </div>
 
-            </section>
+            </div>
 
 
-            <!-- =========================
+            <!-- =================================================
                  CUSTOMERS
-            ========================== -->
+            ================================================== -->
 
-            <section class="view" id="customers">
+            <div class="view" id="view-customers">
 
-                <div class="welcome">
-                    <div>
-                        <h1>Customers</h1>
-                        <p>Manage customer relationships and history.</p>
-                    </div>
-
-                    <button class="primary-button">
-                        + Add customer
-                    </button>
+                <div class="page-heading">
+                    <h1>Customers</h1>
+                    <p>Manage customer profiles and appointment history.</p>
                 </div>
 
-
-                <div class="search-row">
+                <div class="controls">
 
                     <input
                         class="search"
-                        placeholder="Search customers...">
+                        placeholder="Search customers..."
+                        oninput="filterTable(this,'customers-table')"
+                    >
+
+                    <button class="primary-button">
+                        + Add Customer
+                    </button>
 
                 </div>
-
 
                 <div class="panel">
 
                     <div class="table-wrap">
 
-                        <table>
+                        <table id="customers-table">
 
                             <thead>
                                 <tr>
-                                    <th>Customer</th>
+                                    <th>Name</th>
                                     <th>Contact</th>
-                                    <th>Last appointment</th>
-                                    <th>Total visits</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-
-                                <tr>
-                                    <td><strong>Jordan Miller</strong></td>
-                                    <td class="table-muted">jordan@example.com</td>
-                                    <td class="table-muted">Today</td>
-                                    <td>14</td>
-                                </tr>
-
-                                <tr>
-                                    <td><strong>Alex Rivera</strong></td>
-                                    <td class="table-muted">alex@example.com</td>
-                                    <td class="table-muted">Today</td>
-                                    <td>9</td>
-                                </tr>
-
-                                <tr>
-                                    <td><strong>Daniel Kim</strong></td>
-                                    <td class="table-muted">daniel@example.com</td>
-                                    <td class="table-muted">Aug 28</td>
-                                    <td>6</td>
-                                </tr>
-
-                                <tr>
-                                    <td><strong>Marcus Stone</strong></td>
-                                    <td class="table-muted">marcus@example.com</td>
-                                    <td class="table-muted">Aug 24</td>
-                                    <td>21</td>
-                                </tr>
-
-                            </tbody>
-
-                        </table>
-
-                    </div>
-
-                </div>
-
-            </section>
-
-
-            <!-- =========================
-                 LEADS
-            ========================== -->
-
-            <section class="view" id="leads">
-
-                <div class="welcome">
-                    <div>
-                        <h1>Leads</h1>
-                        <p>Track potential customers captured by OfficeWard.</p>
-                    </div>
-                </div>
-
-
-                <div class="panel">
-
-                    <div class="table-wrap">
-
-                        <table>
-
-                            <thead>
-                                <tr>
-                                    <th>Lead</th>
-                                    <th>Contact</th>
-                                    <th>Source</th>
-                                    <th>Captured</th>
+                                    <th>Appointments</th>
+                                    <th>Last Visit</th>
                                     <th>Status</th>
                                 </tr>
                             </thead>
@@ -1784,27 +1468,27 @@ td strong {
                             <tbody>
 
                                 <tr>
-                                    <td><strong>Chris Anderson</strong></td>
-                                    <td class="table-muted">(555) 201-8493</td>
-                                    <td class="table-muted">Phone</td>
-                                    <td class="table-muted">Today</td>
-                                    <td><span class="badge pending">New</span></td>
+                                    <td>James Carter</td>
+                                    <td>james@example.com</td>
+                                    <td>12</td>
+                                    <td>Today</td>
+                                    <td><span class="badge green">Returning</span></td>
                                 </tr>
 
                                 <tr>
-                                    <td><strong>Ryan Lewis</strong></td>
-                                    <td class="table-muted">(555) 201-3302</td>
-                                    <td class="table-muted">Phone</td>
-                                    <td class="table-muted">Yesterday</td>
-                                    <td><span class="badge confirmed">Contacted</span></td>
+                                    <td>Michael Reed</td>
+                                    <td>michael@example.com</td>
+                                    <td>7</td>
+                                    <td>Yesterday</td>
+                                    <td><span class="badge green">Returning</span></td>
                                 </tr>
 
                                 <tr>
-                                    <td><strong>Matthew Cole</strong></td>
-                                    <td class="table-muted">(555) 201-9920</td>
-                                    <td class="table-muted">Phone</td>
-                                    <td class="table-muted">Sep 2</td>
-                                    <td><span class="badge confirmed">Booked</span></td>
+                                    <td>David Wilson</td>
+                                    <td>david@example.com</td>
+                                    <td>1</td>
+                                    <td>Today</td>
+                                    <td><span class="badge blue">New</span></td>
                                 </tr>
 
                             </tbody>
@@ -1815,548 +1499,473 @@ td strong {
 
                 </div>
 
-            </section>
+            </div>
 
 
-            <!-- =========================
+            <!-- =================================================
+                 LEADS
+            ================================================== -->
+
+            <div class="view" id="view-leads">
+
+                <div class="page-heading">
+                    <h1>Leads</h1>
+                    <p>Track customers captured by your AI Employee.</p>
+                </div>
+
+                <div class="panel">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Contact</th>
+                                <th>Source</th>
+                                <th>Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <tr>
+                                <td>Marcus Brown</td>
+                                <td>555-0148</td>
+                                <td>Phone</td>
+                                <td>Today</td>
+                                <td><span class="badge yellow">Follow Up</span></td>
+                            </tr>
+
+                            <tr>
+                                <td>Chris Miller</td>
+                                <td>555-0183</td>
+                                <td>Phone</td>
+                                <td>Yesterday</td>
+                                <td><span class="badge blue">New</span></td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
                  CALLS
-            ========================== -->
+            ================================================== -->
 
-            <section class="view" id="calls">
+            <div class="view" id="view-calls">
 
-                <div class="welcome">
-                    <div>
-                        <h1>Calls</h1>
-                        <p>Review calls handled by your AI Employee.</p>
-                    </div>
+                <div class="page-heading">
+                    <h1>Calls</h1>
+                    <p>Review conversations handled by OfficeWard.</p>
                 </div>
-
 
                 <div class="panel">
 
-                    <div class="table-wrap">
+                    <table>
 
-                        <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Caller</th>
+                                <th>Outcome</th>
+                                <th>AI Action</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
 
-                            <thead>
-                                <tr>
-                                    <th>Caller</th>
-                                    <th>Date</th>
-                                    <th>Duration</th>
-                                    <th>Outcome</th>
-                                    <th>Summary</th>
-                                </tr>
-                            </thead>
+                        <tbody>
 
-                            <tbody>
+                            <tr>
+                                <td>Today 2:14 PM</td>
+                                <td>James Carter</td>
+                                <td>Appointment booked</td>
+                                <td>Booked appointment</td>
+                                <td><span class="badge green">Successful</span></td>
+                            </tr>
 
-                                <tr>
-                                    <td><strong>Jordan Miller</strong></td>
-                                    <td class="table-muted">Today · 8:42 AM</td>
-                                    <td class="table-muted">1:42</td>
-                                    <td><span class="call-result">Appointment booked</span></td>
-                                    <td class="table-muted">Booked haircut.</td>
-                                </tr>
+                            <tr>
+                                <td>Today 1:46 PM</td>
+                                <td>Marcus Brown</td>
+                                <td>Lead captured</td>
+                                <td>Saved lead</td>
+                                <td><span class="badge green">Successful</span></td>
+                            </tr>
 
-                                <tr>
-                                    <td><strong>Unknown caller</strong></td>
-                                    <td class="table-muted">Today · 8:18 AM</td>
-                                    <td class="table-muted">0:58</td>
-                                    <td><span class="call-result">Lead captured</span></td>
-                                    <td class="table-muted">Asked about pricing.</td>
-                                </tr>
+                            <tr>
+                                <td>Today 12:18 PM</td>
+                                <td>Unknown</td>
+                                <td>Human assistance</td>
+                                <td>Handoff</td>
+                                <td><span class="badge yellow">Handoff</span></td>
+                            </tr>
 
-                                <tr>
-                                    <td><strong>Alex Rivera</strong></td>
-                                    <td class="table-muted">Today · 7:51 AM</td>
-                                    <td class="table-muted">2:10</td>
-                                    <td><span class="call-result">Rescheduled</span></td>
-                                    <td class="table-muted">Moved appointment.</td>
-                                </tr>
+                        </tbody>
 
-                            </tbody>
-
-                        </table>
-
-                    </div>
+                    </table>
 
                 </div>
 
-            </section>
+            </div>
 
 
-            <!-- =========================
+            <!-- =================================================
                  AI EMPLOYEE
-            ========================== -->
+            ================================================== -->
 
-            <section class="view" id="employee">
+            <div class="view" id="view-employee">
 
-                <div class="welcome">
-                    <div>
-                        <h1>AI Employee</h1>
-                        <p>Configure what your OfficeWard employee knows and does.</p>
-                    </div>
-
-                    <div class="online">
-                        <span class="status-dot"></span>
-                        ONLINE
-                    </div>
+                <div class="page-heading">
+                    <h1>AI Employee</h1>
+                    <p>
+                        Configure how OfficeWard works for your business.
+                    </p>
                 </div>
 
+                <div class="employee-status">
 
-                <div class="settings-layout">
+                    <strong>
+                        🟢 OfficeWard is online
+                    </strong>
 
-                    <div class="settings-menu">
+                    <span>
+                        Your AI Employee is currently operating normally.
+                    </span>
 
-                        <button class="active">
-                            Business information
-                        </button>
+                </div>
 
-                        <button>
-                            Services
-                        </button>
+                <div class="settings-grid">
 
-                        <button>
-                            Hours
-                        </button>
+                    <div class="setting-card">
 
-                        <button>
-                            FAQs
-                        </button>
+                        <h3>Business Information</h3>
 
-                        <button>
-                            Policies
-                        </button>
+                        <p>
+                            Tell your AI Employee about your business.
+                        </p>
 
-                        <button>
-                            Employee rules
-                        </button>
-
-                        <button>
-                            Personality
-                        </button>
-
-                        <button>
-                            Human handoff
-                        </button>
+                        <input
+                            class="setting-input"
+                            value="Velocity Barber"
+                        >
 
                     </div>
 
+                    <div class="setting-card">
 
-                    <div class="settings-content">
+                        <h3>Services</h3>
 
-                        <div class="settings-section">
+                        <p>
+                            Services your business offers.
+                        </p>
 
-                            <h3>Business information</h3>
+                        <textarea class="setting-textarea">Haircut
+Fade
+Beard Trim
+Haircut + Beard</textarea>
 
-                            <p>
-                                Give your AI Employee the information it needs to represent your business accurately.
-                            </p>
+                    </div>
 
+                    <div class="setting-card">
 
-                            <div class="form-grid">
+                        <h3>Business Hours</h3>
 
-                                <div class="form-group">
-                                    <label>BUSINESS NAME</label>
-                                    <input value="Velocity Barber">
-                                </div>
+                        <p>
+                            When your AI Employee should operate.
+                        </p>
 
-                                <div class="form-group">
-                                    <label>BUSINESS PHONE</label>
-                                    <input value="(555) 201-4400">
-                                </div>
+                        <textarea class="setting-textarea">Monday - Friday: 9 AM - 7 PM
+Saturday: 9 AM - 5 PM
+Sunday: Closed</textarea>
 
-                                <div class="form-group full">
-                                    <label>BUSINESS DESCRIPTION</label>
+                    </div>
 
-                                    <textarea>Velocity Barber is a modern barbershop providing professional haircuts, fades, beard services, and grooming.</textarea>
+                    <div class="setting-card">
 
-                                </div>
+                        <h3>AI Employee Personality</h3>
 
-                                <div class="form-group">
-                                    <label>LOCATION</label>
-                                    <input value="New York, NY">
-                                </div>
+                        <p>
+                            Choose how your AI Employee communicates.
+                        </p>
 
-                                <div class="form-group">
-                                    <label>TIME ZONE</label>
+                        <select class="setting-select">
+                            <option>Professional & Friendly</option>
+                            <option>Friendly & Casual</option>
+                            <option>Professional</option>
+                        </select>
 
-                                    <select>
-                                        <option>America/New_York</option>
-                                    </select>
+                    </div>
 
-                                </div>
+                    <div class="setting-card">
 
-                            </div>
+                        <h3>FAQs</h3>
 
-                        </div>
+                        <p>
+                            Information the AI Employee can answer.
+                        </p>
 
+                        <textarea class="setting-textarea">Parking is available nearby.
+Walk-ins are accepted when availability allows.
+Customers should arrive a few minutes early.</textarea>
 
-                        <div class="settings-section">
+                    </div>
 
-                            <h3>Employee instructions</h3>
+                    <div class="setting-card">
 
-                            <p>
-                                Define important behavior and rules for your AI Employee.
-                            </p>
+                        <h3>Special Instructions</h3>
 
-                            <div class="form-group">
+                        <p>
+                            Important rules for your AI Employee.
+                        </p>
 
-                                <label>SPECIAL INSTRUCTIONS</label>
-
-                                <textarea>Always be polite and professional. Ask for the customer's name and requested service. Never invent availability, prices, or business policies.</textarea>
-
-                            </div>
-
-                        </div>
-
-
-                        <button class="primary-button">
-                            Save changes
-                        </button>
+                        <textarea class="setting-textarea">Do not invent availability.
+If unsure, ask the customer or escalate to a human.</textarea>
 
                     </div>
 
                 </div>
 
-            </section>
+            </div>
 
 
-            <!-- =========================
+            <!-- =================================================
                  PERFORMANCE
-            ========================== -->
+            ================================================== -->
 
-            <section class="view" id="performance">
+            <div class="view" id="view-performance">
 
-                <div class="welcome">
-                    <div>
-                        <h1>Performance</h1>
-                        <p>See how your AI Employee is performing.</p>
-                    </div>
+                <div class="page-heading">
+                    <h1>Performance</h1>
+                    <p>See how your AI Employee is performing.</p>
                 </div>
 
+                <div class="grid grid-4">
 
-                <div class="performance-grid">
-
-                    <div class="panel">
-
-                        <div class="panel-head">
-                            <div class="panel-title">
-                                Employee activity
-                            </div>
-                        </div>
-
-                        <div class="panel-body">
-
-                            <div class="progress-row">
-                                <div class="progress-label">
-                                    <span>Calls successfully handled</span>
-                                    <span>94%</span>
-                                </div>
-
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width:94%"></div>
-                                </div>
-                            </div>
-
-
-                            <div class="progress-row">
-                                <div class="progress-label">
-                                    <span>Appointments completed</span>
-                                    <span>88%</span>
-                                </div>
-
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width:88%"></div>
-                                </div>
-                            </div>
-
-
-                            <div class="progress-row">
-                                <div class="progress-label">
-                                    <span>Lead conversion</span>
-                                    <span>63%</span>
-                                </div>
-
-                                <div class="progress-bar">
-                                    <div class="progress-fill" style="width:63%"></div>
-                                </div>
-                            </div>
-
-                        </div>
-
+                    <div class="metric">
+                        <div class="metric-label">Calls Handled</div>
+                        <div class="metric-value">127</div>
+                        <div class="metric-change">This week</div>
                     </div>
 
+                    <div class="metric">
+                        <div class="metric-label">Appointments</div>
+                        <div class="metric-value">43</div>
+                        <div class="metric-change">Booked by AI</div>
+                    </div>
 
-                    <div class="panel">
+                    <div class="metric">
+                        <div class="metric-label">Leads</div>
+                        <div class="metric-value">19</div>
+                        <div class="metric-change">Captured</div>
+                    </div>
 
-                        <div class="panel-head">
-                            <div class="panel-title">
-                                This month
-                            </div>
-                        </div>
-
-                        <div class="panel-body">
-
-                            <div class="metric-value">
-                                247
-                            </div>
-
-                            <div class="metric-label">
-                                CALLS HANDLED
-                            </div>
-
-                            <br>
-
-                            <div class="metric-value">
-                                121
-                            </div>
-
-                            <div class="metric-label">
-                                APPOINTMENTS BOOKED
-                            </div>
-
-                        </div>
-
+                    <div class="metric">
+                        <div class="metric-label">Success Rate</div>
+                        <div class="metric-value">94%</div>
+                        <div class="metric-change">Successful interactions</div>
                     </div>
 
                 </div>
 
-            </section>
+                <div class="panel" style="margin-top:15px;">
+
+                    <div class="panel-header">
+                        <div class="panel-title">
+                            Performance Summary
+                        </div>
+                    </div>
+
+                    <p style="color:var(--muted);font-size:12px;line-height:1.7;">
+                        Your AI Employee has handled customer interactions,
+                        captured leads, and managed appointments throughout
+                        the week.
+                    </p>
+
+                </div>
+
+            </div>
 
 
-            <!-- =========================
+            <!-- =================================================
                  NOTIFICATIONS
-            ========================== -->
+            ================================================== -->
 
-            <section class="view" id="notifications">
+            <div class="view" id="view-notifications">
 
-                <div class="welcome">
-                    <div>
-                        <h1>Notifications</h1>
-                        <p>Important updates from OfficeWard.</p>
-                    </div>
+                <div class="page-heading">
+                    <h1>Notifications</h1>
+                    <p>Important activity and system alerts.</p>
                 </div>
-
 
                 <div class="panel">
 
-                    <div class="panel-body">
+                    <div class="notification-item">
 
-                        <div class="activity">
+                        <div class="notification-icon">📅</div>
 
-                            <div class="activity-icon">
-                                ✓
-                            </div>
-
-                            <div>
-                                <div class="activity-text">
-                                    New appointment booked for Jordan Miller.
-                                </div>
-
-                                <div class="activity-time">
-                                    8 MIN AGO
-                                </div>
-                            </div>
-
+                        <div>
+                            <strong>New appointment booked</strong>
+                            <p>
+                                David Wilson booked a haircut for tomorrow.
+                            </p>
                         </div>
 
+                    </div>
 
-                        <div class="activity">
+                    <div class="notification-item">
 
-                            <div class="activity-icon">
-                                +
-                            </div>
+                        <div class="notification-icon">👤</div>
 
-                            <div>
-                                <div class="activity-text">
-                                    OfficeWard captured a new lead.
-                                </div>
-
-                                <div class="activity-time">
-                                    24 MIN AGO
-                                </div>
-                            </div>
-
+                        <div>
+                            <strong>New lead captured</strong>
+                            <p>
+                                Marcus Brown contacted your business.
+                            </p>
                         </div>
 
+                    </div>
 
-                        <div class="activity">
+                    <div class="notification-item">
 
-                            <div class="activity-icon">
-                                !
-                            </div>
+                        <div class="notification-icon">⚠️</div>
 
-                            <div>
-                                <div class="activity-text">
-                                    Your AI Employee configuration was updated.
-                                </div>
-
-                                <div class="activity-time">
-                                    YESTERDAY
-                                </div>
-                            </div>
-
+                        <div>
+                            <strong>Human handoff</strong>
+                            <p>
+                                A customer requested human assistance.
+                            </p>
                         </div>
 
                     </div>
 
                 </div>
 
-            </section>
+            </div>
 
 
-            <!-- =========================
+            <!-- =================================================
                  SETTINGS
-            ========================== -->
+            ================================================== -->
 
-            <section class="view" id="settings">
+            <div class="view" id="view-settings">
 
-                <div class="welcome">
-                    <div>
-                        <h1>Settings</h1>
-                        <p>Manage your OfficeWard business account.</p>
-                    </div>
+                <div class="page-heading">
+                    <h1>Settings</h1>
+                    <p>Manage your business and OfficeWard account.</p>
                 </div>
 
+                <div class="settings-grid">
 
-                <div class="settings-content">
+                    <div class="setting-card">
 
-                    <div class="settings-section">
+                        <h3>Business Profile</h3>
 
-                        <h3>Business profile</h3>
+                        <p>Business information.</p>
 
-                        <p>
-                            Your business information.
-                        </p>
-
-                        <div class="form-grid">
-
-                            <div class="form-group">
-                                <label>BUSINESS NAME</label>
-                                <input value="Velocity Barber">
-                            </div>
-
-                            <div class="form-group">
-                                <label>BUSINESS PHONE</label>
-                                <input value="(555) 201-4400">
-                            </div>
-
-                            <div class="form-group">
-                                <label>BUSINESS EMAIL</label>
-                                <input value="owner@velocitybarber.example">
-                            </div>
-
-                            <div class="form-group">
-                                <label>LOCATION</label>
-                                <input value="New York, NY">
-                            </div>
-
-                        </div>
+                        <input
+                            class="setting-input"
+                            value="Velocity Barber"
+                        >
 
                     </div>
 
+                    <div class="setting-card">
 
-                    <div class="settings-section">
+                        <h3>Account Email</h3>
 
-                        <h3>Security</h3>
+                        <p>Your OfficeWard account email.</p>
 
-                        <p>
-                            Manage account security and access.
-                        </p>
+                        <input
+                            class="setting-input"
+                            type="email"
+                            value="owner@velocitybarber.com"
+                        >
+
+                    </div>
+
+                    <div class="setting-card">
+
+                        <h3>Notifications</h3>
+
+                        <p>Choose how OfficeWard notifies you.</p>
+
+                        <select class="setting-select">
+                            <option>Email + Dashboard</option>
+                            <option>Dashboard Only</option>
+                            <option>Email Only</option>
+                        </select>
+
+                    </div>
+
+                    <div class="setting-card">
+
+                        <h3>Calendar</h3>
+
+                        <p>Connect your business calendar.</p>
 
                         <button class="secondary-button">
-                            Change password
+                            Connect Calendar
                         </button>
 
                     </div>
 
                 </div>
 
-            </section>
+            </div>
 
 
-            <!-- =========================
-                 BILLING
-            ========================== -->
+            <!-- =================================================
+                 SUBSCRIPTION
+            ================================================== -->
 
-            <section class="view" id="billing">
+            <div class="view" id="view-subscription">
 
-                <div class="welcome">
-                    <div>
-                        <h1>Subscription</h1>
-                        <p>Manage your OfficeWard subscription.</p>
-                    </div>
+                <div class="page-heading">
+                    <h1>Subscription</h1>
+                    <p>Manage your OfficeWard subscription.</p>
                 </div>
-
 
                 <div class="plan-card">
 
-                    <div>
-                        <div class="plan-name">
-                            OfficeWard Starter
-                        </div>
+                    <span class="badge green">
+                        Active
+                    </span>
 
-                        <div class="plan-status">
-                            ● Active subscription
-                        </div>
-                    </div>
+                    <h2 style="margin-top:14px;">
+                        OfficeWard Starter
+                    </h2>
 
                     <div class="plan-price">
                         $59.99
                         <span>/ month</span>
                     </div>
 
-                </div>
+                    <ul class="feature-list">
 
+                        <li>AI Employee</li>
+                        <li>Customer call handling</li>
+                        <li>Appointment management</li>
+                        <li>Lead capture</li>
+                        <li>Customer management</li>
+                        <li>Business dashboard</li>
 
-                <div class="panel">
+                    </ul>
 
-                    <div class="panel-head">
-                        <div class="panel-title">
-                            Subscription details
-                        </div>
-                    </div>
-
-                    <div class="panel-body">
-
-                        <div class="form-grid">
-
-                            <div class="form-group">
-                                <label>STATUS</label>
-                                <input value="Active" readonly>
-                            </div>
-
-                            <div class="form-group">
-                                <label>PLAN</label>
-                                <input value="OfficeWard Starter" readonly>
-                            </div>
-
-                            <div class="form-group">
-                                <label>NEXT BILLING DATE</label>
-                                <input value="October 5, 2026" readonly>
-                            </div>
-
-                            <div class="form-group">
-                                <label>PAYMENT METHOD</label>
-                                <input value="•••• •••• •••• 4242" readonly>
-                            </div>
-
-                        </div>
-
-                        <br>
-
-                        <button class="secondary-button">
-                            Manage billing
-                        </button>
-
-                    </div>
+                    <button class="secondary-button">
+                        Manage Subscription
+                    </button>
 
                 </div>
 
-            </section>
+            </div>
 
-        </div>
+
+        </section>
 
     </main>
 
@@ -2365,15 +1974,159 @@ td strong {
 
 <script>
 
-/* =========================
-   VIEW SWITCHING
-========================= */
+/* =========================================================
+   AUTHENTICATION UI
+========================================================= */
 
-const navItems = document.querySelectorAll(".nav-item");
-const views = document.querySelectorAll(".view");
-const pageTitle = document.getElementById("pageTitle");
+function hideAuthForms() {
+    document.querySelectorAll(".auth-form").forEach(form => {
+        form.classList.remove("active");
+    });
+}
 
-const titles = {
+function showSignIn() {
+    hideAuthForms();
+    document.getElementById("signin-form").classList.add("active");
+}
+
+function showSignUp() {
+    hideAuthForms();
+    document.getElementById("signup-form").classList.add("active");
+}
+
+function showForgot() {
+    hideAuthForms();
+    document.getElementById("forgot-form").classList.add("active");
+}
+
+
+/*
+    TEMPORARY DEMO LOGIN
+
+    IMPORTANT:
+    This is NOT production authentication.
+
+    Later this button will:
+    1. Send credentials to the OfficeWard backend.
+    2. Verify the account.
+    3. Verify the Stripe subscription.
+    4. Receive a secure authenticated session.
+    5. Open the customer's business dashboard.
+*/
+
+function demoSignIn() {
+
+    const email = document.getElementById("signin-email").value.trim();
+    const password = document.getElementById("signin-password").value.trim();
+
+    if (!email || !password) {
+        alert("Please enter your email and password.");
+        return;
+    }
+
+    document.getElementById("signin-notice").style.display = "block";
+
+    setTimeout(() => {
+        openDashboard();
+    }, 700);
+}
+
+
+/*
+    TEMPORARY DEMO SIGNUP
+
+    Production version will send the customer into
+    Stripe Checkout and wait for verified subscription
+    status before activating the account.
+*/
+
+function demoSignUp() {
+
+    const business = document
+        .getElementById("signup-business")
+        .value
+        .trim();
+
+    const email = document
+        .getElementById("signup-email")
+        .value
+        .trim();
+
+    const password = document
+        .getElementById("signup-password")
+        .value
+        .trim();
+
+    if (!business || !email || !password) {
+        alert("Please complete all fields.");
+        return;
+    }
+
+    document.getElementById("signup-notice").style.display = "block";
+
+    /*
+        TEMPORARY:
+        We use the business name for the visual demo.
+
+        This will eventually happen AFTER:
+        Stripe payment → webhook → subscription verification
+        → business account creation.
+    */
+
+    document.getElementById("business-display").textContent = business;
+
+    setTimeout(() => {
+        openDashboard();
+    }, 900);
+}
+
+function demoForgot() {
+
+    const email = document
+        .getElementById("forgot-email")
+        .value
+        .trim();
+
+    if (!email) {
+        alert("Please enter your email.");
+        return;
+    }
+
+    document.getElementById("forgot-notice").style.display = "block";
+}
+
+
+/* =========================================================
+   DASHBOARD ACCESS
+========================================================= */
+
+function openDashboard() {
+
+    document.getElementById("auth-screen").style.display = "none";
+    document.getElementById("app").style.display = "block";
+
+    window.scrollTo(0,0);
+}
+
+function logout() {
+
+    document.getElementById("app").style.display = "none";
+    document.getElementById("auth-screen").style.display = "flex";
+
+    showSignIn();
+
+    document.getElementById("signin-email").value = "";
+    document.getElementById("signin-password").value = "";
+
+    window.scrollTo(0,0);
+}
+
+
+/* =========================================================
+   DASHBOARD NAVIGATION
+========================================================= */
+
+const viewTitles = {
     dashboard: "Dashboard",
     appointments: "Appointments",
     customers: "Customers",
@@ -2383,125 +2136,113 @@ const titles = {
     performance: "Performance",
     notifications: "Notifications",
     settings: "Settings",
-    billing: "Subscription"
+    subscription: "Subscription"
 };
 
-function switchView(viewName) {
+function showView(viewName, button) {
 
-    views.forEach(view => {
+    document.querySelectorAll(".view").forEach(view => {
         view.classList.remove("active");
     });
 
-    const selectedView = document.getElementById(viewName);
+    const target = document.getElementById("view-" + viewName);
 
-    if (selectedView) {
-        selectedView.classList.add("active");
+    if (target) {
+        target.classList.add("active");
     }
 
-    navItems.forEach(item => {
-        item.classList.remove("active");
-
-        if (item.dataset.view === viewName) {
-            item.classList.add("active");
-        }
+    document.querySelectorAll(".nav-button").forEach(btn => {
+        btn.classList.remove("active");
     });
 
-    pageTitle.textContent = titles[viewName] || "Dashboard";
+    if (button) {
+        button.classList.add("active");
+    }
 
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
+    document.getElementById("page-title").textContent =
+        viewTitles[viewName] || "OfficeWard";
 
     document.getElementById("sidebar").classList.remove("open");
+
+    window.scrollTo(0,0);
+}
+
+function showViewByName(viewName) {
+
+    const buttons = document.querySelectorAll(".nav-button");
+
+    let matchingButton = null;
+
+    buttons.forEach(button => {
+
+        if (
+            button.textContent
+                .trim()
+                .toLowerCase()
+            === viewTitles[viewName].toLowerCase()
+        ) {
+            matchingButton = button;
+        }
+
+    });
+
+    showView(viewName, matchingButton);
 }
 
 
-/* =========================
-   NAVIGATION
-========================= */
+/* =========================================================
+   SEARCH
+========================================================= */
 
-navItems.forEach(item => {
+function filterTable(input, tableId) {
 
-    item.addEventListener("click", () => {
+    const query = input.value.toLowerCase();
 
-        const viewName = item.dataset.view;
+    const table = document.getElementById(tableId);
 
-        switchView(viewName);
+    if (!table) return;
 
-    });
+    const rows = table.querySelectorAll("tbody tr");
 
-});
+    rows.forEach(row => {
 
+        const text = row.textContent.toLowerCase();
 
-/* =========================
-   MOBILE SIDEBAR
-========================= */
-
-const mobileMenu = document.getElementById("mobileMenu");
-const sidebar = document.getElementById("sidebar");
-
-mobileMenu.addEventListener("click", () => {
-
-    sidebar.classList.toggle("open");
-
-});
-
-
-/* =========================
-   SETTINGS MENU
-========================= */
-
-const settingsButtons =
-    document.querySelectorAll(".settings-menu button");
-
-settingsButtons.forEach(button => {
-
-    button.addEventListener("click", () => {
-
-        settingsButtons.forEach(btn => {
-            btn.classList.remove("active");
-        });
-
-        button.classList.add("active");
+        row.style.display =
+            text.includes(query)
+                ? ""
+                : "none";
 
     });
+}
 
-});
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+function toggleSidebar() {
+
+    document
+        .getElementById("sidebar")
+        .classList.toggle("open");
+
+}
 
 
-/* =========================
-   DEMO SEARCH
-========================= */
+/* =========================================================
+   KEYBOARD
+========================================================= */
 
-document.querySelectorAll(".search").forEach(input => {
+document.addEventListener("keydown", event => {
 
-    input.addEventListener("input", event => {
+    if (event.key === "Escape") {
 
-        const query =
-            event.target.value.toLowerCase().trim();
+        document
+            .getElementById("sidebar")
+            .classList.remove("open");
 
-        const table =
-            event.target.closest(".view")
-                ?.querySelector("tbody");
-
-        if (!table) return;
-
-        const rows = table.querySelectorAll("tr");
-
-        rows.forEach(row => {
-
-            const text =
-                row.textContent.toLowerCase();
-
-            row.style.display =
-                text.includes(query)
-                    ? ""
-                    : "none";
-
-        });
-
-    });
+    }
 
 });
 
