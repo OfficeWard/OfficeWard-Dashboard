@@ -2014,87 +2014,441 @@ function showForgot() {
     5. Open the customer's business dashboard.
 */
 
-function demoSignIn() {
+<script>
+/* =========================================================
+   OFFICEWARD — BLOCK #1.5 DEMO ACCOUNT SYSTEM
+   Business-specific identity
+   ========================================================= */
 
-    const email = document.getElementById("signin-email").value.trim();
-    const password = document.getElementById("signin-password").value.trim();
+const DEMO_ACCOUNTS_KEY = "officeward_demo_accounts";
+const ACTIVE_ACCOUNT_KEY = "officeward_active_account";
 
-    if (!email || !password) {
-        alert("Please enter your email and password.");
+/* ---------- ACCOUNT STORAGE ---------- */
+
+function getDemoAccounts() {
+    try {
+        return JSON.parse(localStorage.getItem(DEMO_ACCOUNTS_KEY)) || [];
+    } catch {
+        return [];
+    }
+}
+
+function saveDemoAccounts(accounts) {
+    localStorage.setItem(DEMO_ACCOUNTS_KEY, JSON.stringify(accounts));
+}
+
+function getActiveAccount() {
+    try {
+        return JSON.parse(localStorage.getItem(ACTIVE_ACCOUNT_KEY));
+    } catch {
+        return null;
+    }
+}
+
+function setActiveAccount(account) {
+    localStorage.setItem(
+        ACTIVE_ACCOUNT_KEY,
+        JSON.stringify(account)
+    );
+}
+
+function clearActiveAccount() {
+    localStorage.removeItem(ACTIVE_ACCOUNT_KEY);
+}
+
+
+/* =========================================================
+   SIGN UP
+   ========================================================= */
+
+function demoSignUp() {
+
+    const businessInput =
+        document.getElementById("signupBusiness");
+
+    const emailInput =
+        document.getElementById("signupEmail");
+
+    const passwordInput =
+        document.getElementById("signupPassword");
+
+    if (!businessInput || !emailInput || !passwordInput) {
+        console.error("Signup fields not found.");
         return;
     }
 
-    document.getElementById("signin-notice").style.display = "block";
+    const businessName =
+        businessInput.value.trim();
+
+    const email =
+        emailInput.value.trim().toLowerCase();
+
+    const password =
+        passwordInput.value;
+
+    if (!businessName || !email || !password) {
+        showAuthNotice(
+            "Please complete all fields."
+        );
+        return;
+    }
+
+    const accounts = getDemoAccounts();
+
+    const existingAccount =
+        accounts.find(account =>
+            account.email === email
+        );
+
+    if (existingAccount) {
+        showAuthNotice(
+            "An account with this email already exists."
+        );
+        return;
+    }
+
+    const newAccount = {
+        id:
+            "business_" +
+            Date.now(),
+
+        businessName:
+            businessName,
+
+        email:
+            email,
+
+        password:
+            password,
+
+        subscriptionStatus:
+            "demo",
+
+        createdAt:
+            new Date().toISOString()
+    };
+
+    accounts.push(newAccount);
+
+    saveDemoAccounts(accounts);
+
+    setActiveAccount(newAccount);
+
+    showAuthNotice(
+        "Account created successfully."
+    );
 
     setTimeout(() => {
-        openDashboard();
+        enterDashboard(newAccount);
     }, 700);
 }
 
 
-/*
-    TEMPORARY DEMO SIGNUP
+/* =========================================================
+   SIGN IN
+   ========================================================= */
 
-    Production version will send the customer into
-    Stripe Checkout and wait for verified subscription
-    status before activating the account.
-*/
+function demoSignIn() {
 
-function demoSignUp() {
+    const emailInput =
+        document.getElementById("signinEmail");
 
-    const business = document
-        .getElementById("signup-business")
-        .value
-        .trim();
+    const passwordInput =
+        document.getElementById("signinPassword");
 
-    const email = document
-        .getElementById("signup-email")
-        .value
-        .trim();
-
-    const password = document
-        .getElementById("signup-password")
-        .value
-        .trim();
-
-    if (!business || !email || !password) {
-        alert("Please complete all fields.");
+    if (!emailInput || !passwordInput) {
+        console.error("Signin fields not found.");
         return;
     }
 
-    document.getElementById("signup-notice").style.display = "block";
+    const email =
+        emailInput.value.trim().toLowerCase();
 
-    /*
-        TEMPORARY:
-        We use the business name for the visual demo.
+    const password =
+        passwordInput.value;
 
-        This will eventually happen AFTER:
-        Stripe payment → webhook → subscription verification
-        → business account creation.
-    */
+    if (!email || !password) {
+        showAuthNotice(
+            "Please enter your email and password."
+        );
+        return;
+    }
 
-    document.getElementById("business-display").textContent = business;
+    const accounts =
+        getDemoAccounts();
+
+    const account =
+        accounts.find(item =>
+            item.email === email &&
+            item.password === password
+        );
+
+    if (!account) {
+        showAuthNotice(
+            "No matching demo account found. Create an account first."
+        );
+        return;
+    }
+
+    setActiveAccount(account);
+
+    showAuthNotice(
+        "Signed in successfully."
+    );
 
     setTimeout(() => {
-        openDashboard();
-    }, 900);
+        enterDashboard(account);
+    }, 500);
 }
+
+
+/* =========================================================
+   ENTER DASHBOARD
+   ========================================================= */
+
+function enterDashboard(account) {
+
+    if (!account) return;
+
+    /*
+       IMPORTANT:
+       This replaces the old hard-coded
+       "Velocity Barber" behavior.
+    */
+
+    updateBusinessIdentity(account);
+
+    const authScreen =
+        document.getElementById("authScreen");
+
+    const dashboard =
+        document.getElementById("dashboard");
+
+    if (authScreen) {
+        authScreen.style.display = "none";
+    }
+
+    if (dashboard) {
+        dashboard.style.display = "block";
+    }
+
+    /*
+       If your existing dashboard uses a class
+       instead of IDs, keep your existing show/hide
+       code here as well.
+    */
+
+    document.body.classList.add("dashboard-active");
+}
+
+
+/* =========================================================
+   BUSINESS IDENTITY
+   ========================================================= */
+
+function updateBusinessIdentity(account) {
+
+    const businessName =
+        account.businessName || "OfficeWard Business";
+
+    /*
+       Update every common business-name element.
+       These selectors are intentionally broad so the
+       existing dashboard can keep its design.
+    */
+
+    const selectors = [
+
+        "#businessName",
+        "#business-name",
+        "#businessNameDisplay",
+        "#business-name-display",
+        ".business-name",
+        ".business-name-display",
+        "[data-business-name]"
+
+    ];
+
+    selectors.forEach(selector => {
+
+        document
+            .querySelectorAll(selector)
+            .forEach(element => {
+
+                element.textContent =
+                    businessName;
+
+            });
+
+    });
+
+    /*
+       Update any elements specifically marked
+       with data-business-name.
+    */
+
+    document
+        .querySelectorAll("[data-business-name]")
+        .forEach(element => {
+
+            element.textContent =
+                businessName;
+
+        });
+
+    /*
+       Update browser title.
+    */
+
+    document.title =
+        businessName +
+        " — OfficeWard Business Dashboard";
+}
+
+
+/* =========================================================
+   LOGOUT
+   ========================================================= */
+
+function demoLogout() {
+
+    clearActiveAccount();
+
+    const dashboard =
+        document.getElementById("dashboard");
+
+    const authScreen =
+        document.getElementById("authScreen");
+
+    if (dashboard) {
+        dashboard.style.display = "none";
+    }
+
+    if (authScreen) {
+        authScreen.style.display = "flex";
+    }
+
+    document.body.classList.remove(
+        "dashboard-active"
+    );
+
+    /*
+       Clear auth fields.
+    */
+
+    document
+        .querySelectorAll(
+            "#signinEmail, #signinPassword"
+        )
+        .forEach(input => {
+            input.value = "";
+        });
+
+    showAuthNotice(
+        "You've been signed out."
+    );
+}
+
+
+/* =========================================================
+   FORGOT PASSWORD
+   ========================================================= */
 
 function demoForgot() {
 
-    const email = document
-        .getElementById("forgot-email")
-        .value
-        .trim();
+    const emailInput =
+        document.getElementById("forgotEmail");
+
+    if (!emailInput) return;
+
+    const email =
+        emailInput.value.trim();
 
     if (!email) {
-        alert("Please enter your email.");
+
+        showAuthNotice(
+            "Enter your email address."
+        );
+
         return;
     }
 
-    document.getElementById("forgot-notice").style.display = "block";
+    showAuthNotice(
+        "Password reset instructions would be sent here in the production version."
+    );
 }
 
+
+/* =========================================================
+   AUTH NOTICE
+   ========================================================= */
+
+function showAuthNotice(message) {
+
+    /*
+       Works with the existing notice element if present.
+    */
+
+    const notice =
+        document.getElementById("authNotice");
+
+    if (notice) {
+
+        notice.textContent =
+            message;
+
+        notice.style.display =
+            "block";
+
+        return;
+    }
+
+    /*
+       Fallback.
+    */
+
+    console.log(
+        "[OfficeWard]",
+        message
+    );
+}
+
+
+/* =========================================================
+   SESSION RESTORE
+   ========================================================= */
+
+function restoreDemoSession() {
+
+    const account =
+        getActiveAccount();
+
+    if (!account) {
+        return;
+    }
+
+    /*
+       Restore the exact business that was
+       previously signed in.
+    */
+
+    enterDashboard(account);
+}
+
+
+/* =========================================================
+   INITIALIZATION
+   ========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        restoreDemoSession();
+
+    }
+);
+</script>
 
 /* =========================================================
    DASHBOARD ACCESS
