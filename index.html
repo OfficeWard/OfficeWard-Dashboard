@@ -885,6 +885,16 @@ tr:last-child td {
     }
 }
 </style>
+
+<style id="officeward-font-fix">
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+html, body, button, input, textarea, select, option {
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+</style>
+
 </head>
 
 <body>
@@ -1978,8 +1988,60 @@ If unsure, ask the customer or escalate to a human.</textarea>
    BLOCK #1.5 DEMO ACCOUNT SYSTEM
    ========================================================= */
 
-const DEMO_ACCOUNTS_KEY = "officeward_demo_accounts";
-const ACTIVE_ACCOUNT_KEY = "officeward_active_account";
+/* =========================================================
+   OFFICEWARD BACKEND CONNECTION
+========================================================= */
+
+// Set window.OFFICEWARD_API_URL before this script in production,
+// or change the fallback URL for local development.
+const OFFICEWARD_API_URL = window.OFFICEWARD_API_URL || "https://officeward-backend.onrender.com";
+
+const OFFICEWARD_TOKEN_KEY = "officeward_session_token";
+
+function getAuthToken() {
+    return sessionStorage.getItem(OFFICEWARD_TOKEN_KEY) || "";
+}
+
+function setAuthToken(token) {
+    if (token) sessionStorage.setItem(OFFICEWARD_TOKEN_KEY, token);
+}
+
+function clearAuthToken() {
+    sessionStorage.removeItem(OFFICEWARD_TOKEN_KEY);
+}
+
+async function apiRequest(path, options = {}) {
+    const headers = {
+        "Content-Type": "application/json",
+        ...(options.headers || {})
+    };
+
+    const token = getAuthToken();
+    if (token) {
+        headers.Authorization = `Bearer ${token}`;
+    }
+
+    const response = await fetch(
+        OFFICEWARD_API_URL.replace(/\/$/, "") + path,
+        { ...options, headers }
+    );
+
+    let data = {};
+    try {
+        data = await response.json();
+    } catch (_) {}
+
+    if (!response.ok) {
+        const error = new Error(
+            data.detail || `Request failed (${response.status})`
+        );
+        error.status = response.status;
+        error.data = data;
+        throw error;
+    }
+
+    return data;
+}
 
 
 /* =========================================================
@@ -2007,338 +2069,263 @@ function showForgot() {
     document.getElementById("forgot-form").classList.add("active");
 }
 
-
-/* =========================================================
-   DEMO ACCOUNT STORAGE
-========================================================= */
-
-function getDemoAccounts() {
-    try {
-        return JSON.parse(
-            localStorage.getItem(DEMO_ACCOUNTS_KEY) || "[]"
-        );
-    } catch {
-        return [];
+function showAuthNotice(message, formId = "signin-notice") {
+    const notice = document.getElementById(formId);
+    if (notice) {
+        notice.textContent = message;
+        notice.style.display = "block";
     }
 }
 
-function saveDemoAccounts(accounts) {
-    localStorage.setItem(
-        DEMO_ACCOUNTS_KEY,
-        JSON.stringify(accounts)
-    );
+function setAuthBusy(button, busyText, originalText) {
+    if (!button) return;
+    button.disabled = true;
+    button.dataset.originalText = originalText || button.textContent;
+    button.textContent = busyText;
 }
 
-function getActiveAccount() {
-    try {
-        return JSON.parse(
-            localStorage.getItem(ACTIVE_ACCOUNT_KEY)
-        );
-    } catch {
-        return null;
-    }
-}
-
-function setActiveAccount(account) {
-    localStorage.setItem(
-        ACTIVE_ACCOUNT_KEY,
-        JSON.stringify(account)
-    );
-}
-
-function clearActiveAccount() {
-    localStorage.removeItem(ACTIVE_ACCOUNT_KEY);
+function restoreAuthButton(button) {
+    if (!button) return;
+    button.disabled = false;
+    button.textContent = button.dataset.originalText || button.textContent;
 }
 
 
 /* =========================================================
-   AUTH NOTICES
+   SIGN UP — REAL BACKEND
 ========================================================= */
 
-function showAuthNotice(message, formId = null) {
-
-    if (formId) {
-        const notice = document.getElementById(formId);
-
-        if (notice) {
-            notice.textContent = message;
-            notice.style.display = "block";
-            return;
-        }
-    }
-
-    console.log("[OfficeWard]", message);
-}
-
-
-/* =========================================================
-   SIGN UP
-========================================================= */
-
-function demoSignUp() {
-
-    const businessInput =
-        document.getElementById("signup-business");
-
-    const emailInput =
-        document.getElementById("signup-email");
-
-    const passwordInput =
-        document.getElementById("signup-password");
-
-    const businessName =
-        businessInput.value.trim();
-
-    const email =
-        emailInput.value.trim().toLowerCase();
-
-    const password =
-        passwordInput.value;
+async function demoSignUp() {
+    const businessName = document.getElementById("signup-business").value.trim();
+    const email = document.getElementById("signup-email").value.trim();
+    const password = document.getElementById("signup-password").value;
+    const button = document.querySelector("#signup-form .auth-button");
 
     if (!businessName || !email || !password) {
-        showAuthNotice(
-            "Please complete all fields.",
-            "signup-notice"
-        );
+        showAuthNotice("Please complete all fields.", "signup-notice");
         return;
     }
 
-    const accounts = getDemoAccounts();
+    setAuthBusy(button, "Creating account…");
 
-    const existingAccount = accounts.find(
-        account => account.email === email
-    );
+    try {
+        const data = await apiRequest("/auth/signup", {
+            method: "POST",
+            body: JSON.stringify({
+                business_name: businessName,
+                email,
+                password
+            })
+        });
 
-    if (existingAccount) {
+        setAuthToken(data.token);
+
+        if (data.user.subscription_status !== "active") {
+            showAuthNotice(
+                "Account created. An active OfficeWard subscription is required before dashboard access.",
+                "signup-notice"
+            );
+            return;
+        }
+
+        await loadAuthenticatedDashboard(data.user);
+    } catch (error) {
         showAuthNotice(
-            "An account with this email already exists.",
+            error.message || "Unable to create the account.",
             "signup-notice"
         );
-        return;
+    } finally {
+        restoreAuthButton(button);
     }
-
-    const account = {
-        id: "business_" + Date.now(),
-        businessName: businessName,
-        email: email,
-        password: password,
-        subscriptionStatus: "demo",
-        createdAt: new Date().toISOString()
-    };
-
-    accounts.push(account);
-    saveDemoAccounts(accounts);
-    setActiveAccount(account);
-
-    showAuthNotice(
-        "Account created successfully.",
-        "signup-notice"
-    );
-
-    setTimeout(() => {
-        enterDashboard(account);
-    }, 500);
 }
 
 
 /* =========================================================
-   SIGN IN
+   SIGN IN — REAL BACKEND
 ========================================================= */
 
-function demoSignIn() {
-
-    const emailInput =
-        document.getElementById("signin-email");
-
-    const passwordInput =
-        document.getElementById("signin-password");
-
-    const email =
-        emailInput.value.trim().toLowerCase();
-
-    const password =
-        passwordInput.value;
+async function demoSignIn() {
+    const email = document.getElementById("signin-email").value.trim();
+    const password = document.getElementById("signin-password").value;
+    const button = document.querySelector("#signin-form .auth-button");
 
     if (!email || !password) {
-        showAuthNotice(
-            "Please enter your email and password.",
-            "signin-notice"
-        );
+        showAuthNotice("Please enter your email and password.", "signin-notice");
         return;
     }
 
-    const accounts = getDemoAccounts();
+    setAuthBusy(button, "Signing in…");
 
-    const account = accounts.find(
-        item =>
-            item.email === email &&
-            item.password === password
-    );
+    try {
+        const data = await apiRequest("/auth/login", {
+            method: "POST",
+            body: JSON.stringify({ email, password })
+        });
 
-    if (!account) {
-        showAuthNotice(
-            "No matching demo account found. Create an account first.",
-            "signin-notice"
-        );
-        return;
+        setAuthToken(data.token);
+        await loadAuthenticatedDashboard(data.user);
+    } catch (error) {
+        if (error.status === 402) {
+            showAuthNotice(
+                "Your OfficeWard subscription is inactive. Dashboard access is blocked until the subscription is active.",
+                "signin-notice"
+            );
+        } else {
+            showAuthNotice(
+                error.message || "Unable to sign in.",
+                "signin-notice"
+            );
+        }
+    } finally {
+        restoreAuthButton(button);
     }
-
-    setActiveAccount(account);
-
-    showAuthNotice(
-        "Signed in successfully.",
-        "signin-notice"
-    );
-
-    setTimeout(() => {
-        enterDashboard(account);
-    }, 300);
 }
 
 
 /* =========================================================
-   DASHBOARD ACCESS
+   AUTHENTICATED DASHBOARD ACCESS
 ========================================================= */
 
-function enterDashboard(account) {
+async function loadAuthenticatedDashboard(user = null) {
+    try {
+        const me = user || await apiRequest("/auth/me");
+        const dashboard = await apiRequest("/dashboard");
 
+        enterDashboard({
+            businessName: dashboard.business.name,
+            email: me.email,
+            businessId: dashboard.business.business_id,
+            subscriptionStatus: dashboard.business.subscription_status
+        });
+
+        // Populate live data where matching dashboard elements exist.
+        updateDashboardFromBackend(dashboard);
+    } catch (error) {
+        if (error.status === 402) {
+            showAuthNotice(
+                "An active OfficeWard subscription is required for dashboard access.",
+                "signin-notice"
+            );
+            clearAuthToken();
+            showSignIn();
+            return false;
+        }
+
+        if (error.status === 401) {
+            clearAuthToken();
+            showSignIn();
+            showAuthNotice(
+                "Your session expired. Please sign in again.",
+                "signin-notice"
+            );
+            return false;
+        }
+
+        console.error("OfficeWard dashboard error:", error);
+        showAuthNotice(
+            "The OfficeWard backend could not be reached. Check the backend URL and try again.",
+            "signin-notice"
+        );
+        return false;
+    }
+
+    return true;
+}
+
+function updateDashboardFromBackend(data) {
+    const business = data.business || {};
+    const employee = data.employee || {};
+
+    updateBusinessIdentity({
+        businessName: business.name || "OfficeWard Business"
+    });
+
+    // These IDs are optional; if the existing UI has them, populate them.
+    const appointmentCount = document.getElementById("dashboard-appointment-count");
+    if (appointmentCount) appointmentCount.textContent = (data.appointments || []).length;
+
+    const leadCount = document.getElementById("dashboard-lead-count");
+    if (leadCount) leadCount.textContent = (data.leads || []).length;
+
+    const customerCount = document.getElementById("dashboard-customer-count");
+    if (customerCount) customerCount.textContent = (data.customers || []).length;
+
+    const callCount = document.getElementById("dashboard-call-count");
+    if (callCount) callCount.textContent = (data.calls || []).length;
+
+    const employeeName = document.getElementById("employee-name");
+    if (employeeName && employee.employee_name) {
+        employeeName.textContent = employee.employee_name;
+    }
+}
+
+function enterDashboard(account) {
     if (!account) return;
 
     updateBusinessIdentity(account);
 
-    const authScreen =
-        document.getElementById("auth-screen");
+    const authScreen = document.getElementById("auth-screen");
+    const app = document.getElementById("app");
 
-    const app =
-        document.getElementById("app");
-
-    if (authScreen) {
-        authScreen.style.display = "none";
-    }
-
-    if (app) {
-        app.style.display = "block";
-    }
+    if (authScreen) authScreen.style.display = "none";
+    if (app) app.style.display = "block";
 
     window.scrollTo(0, 0);
 }
 
 function openDashboard() {
-
-    const authScreen =
-        document.getElementById("auth-screen");
-
-    const app =
-        document.getElementById("app");
-
-    if (authScreen) {
-        authScreen.style.display = "none";
-    }
-
-    if (app) {
-        app.style.display = "block";
-    }
-
-    window.scrollTo(0, 0);
+    loadAuthenticatedDashboard();
 }
 
 
 /* =========================================================
-   BUSINESS IDENTITY
+   LOGOUT — REAL BACKEND
 ========================================================= */
 
-function updateBusinessIdentity(account) {
-
-    const businessName =
-        account.businessName || "OfficeWard Business";
-
-    const businessDisplay =
-        document.getElementById("business-display");
-
-    if (businessDisplay) {
-        businessDisplay.textContent = businessName;
+async function logout() {
+    try {
+        if (getAuthToken()) {
+            await apiRequest("/auth/logout", { method: "POST" });
+        }
+    } catch (_) {
+        // Local cleanup still occurs if the backend is unavailable.
     }
 
-    const avatar =
-        document.getElementById("avatar");
+    clearAuthToken();
 
-    if (avatar) {
-        const initials = businessName
-            .split(/\s+/)
-            .filter(Boolean)
-            .slice(0, 2)
-            .map(word => word[0].toUpperCase())
-            .join("");
+    const app = document.getElementById("app");
+    const authScreen = document.getElementById("auth-screen");
 
-        avatar.textContent =
-            initials || "OW";
-    }
-
-    document.title =
-        businessName +
-        " — OfficeWard Business Dashboard";
-}
-
-
-/* =========================================================
-   LOGOUT
-========================================================= */
-
-function logout() {
-
-    clearActiveAccount();
-
-    const app =
-        document.getElementById("app");
-
-    const authScreen =
-        document.getElementById("auth-screen");
-
-    if (app) {
-        app.style.display = "none";
-    }
-
-    if (authScreen) {
-        authScreen.style.display = "flex";
-    }
+    if (app) app.style.display = "none";
+    if (authScreen) authScreen.style.display = "flex";
 
     document.getElementById("signin-email").value = "";
     document.getElementById("signin-password").value = "";
 
     showSignIn();
-
     window.scrollTo(0, 0);
 }
 
-
-/* Keep compatibility with any old code that calls demoLogout(). */
 function demoLogout() {
     logout();
 }
 
 
 /* =========================================================
-   FORGOT PASSWORD
+   FORGOT PASSWORD — BACKEND PLACEHOLDER
 ========================================================= */
 
 function demoForgot() {
-
-    const emailInput =
-        document.getElementById("forgot-email");
-
-    const email =
-        emailInput.value.trim();
+    const email = document.getElementById("forgot-email").value.trim();
 
     if (!email) {
-        showAuthNotice(
-            "Enter your email address.",
-            "forgot-notice"
-        );
+        showAuthNotice("Enter your email address.", "forgot-notice");
         return;
     }
 
+    // Password-reset email infrastructure is intentionally not faked here.
     showAuthNotice(
-        "Demo: password reset request received.",
+        "Password reset email infrastructure will be connected in the next authentication step.",
         "forgot-notice"
     );
 }
@@ -2348,14 +2335,9 @@ function demoForgot() {
    SESSION RESTORE
 ========================================================= */
 
-function restoreDemoSession() {
-
-    const account =
-        getActiveAccount();
-
-    if (account) {
-        enterDashboard(account);
-    }
+async function restoreDemoSession() {
+    if (!getAuthToken()) return;
+    await loadAuthenticatedDashboard();
 }
 
 
@@ -2506,5 +2488,136 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
+
+<script id="officeward-onboarding-logic">
+(function(){
+  const OW_API = window.OFFICEWARD_API_URL || "https://officeward-backend.onrender.com";
+
+  function owToken(){ return sessionStorage.getItem("officeward_token") || ""; }
+
+  async function owFetch(path, options={}){
+    const headers = Object.assign({"Content-Type":"application/json"}, options.headers || {});
+    if (owToken()) headers.Authorization = "Bearer " + owToken();
+    const res = await fetch(OW_API + path, Object.assign({}, options, {headers}));
+    let data = {};
+    try { data = await res.json(); } catch(e) {}
+    if (!res.ok) throw new Error(data.detail || data.message || ("Request failed (" + res.status + ")"));
+    return data;
+  }
+
+  function owStep(n){
+    document.querySelectorAll(".ow-step").forEach((el,i)=>el.classList.toggle("active", i===n-1));
+    document.querySelectorAll(".ow-progress-step").forEach((el,i)=>el.classList.toggle("active", i<n));
+  }
+  window.owGoToStep = owStep;
+
+  window.owChooseVerification = async function(method){
+    const status = document.getElementById("ow-verification-status");
+    try {
+      status.textContent = method === "stripe"
+        ? "Opening subscription setup..."
+        : "Email verification selected. Check your email to complete verification.";
+      if(method === "stripe"){
+        // Backend can return a real Stripe Checkout URL once STRIPE_PRICE_ID/Stripe is configured.
+        const result = await owFetch("/subscription/checkout", {method:"POST", body:JSON.stringify({})});
+        if(result.checkout_url) window.location.href = result.checkout_url;
+        else status.textContent = result.message || "Stripe setup is ready to be connected.";
+      } else {
+        const result = await owFetch("/auth/request-email-verification", {method:"POST", body:JSON.stringify({})});
+        status.textContent = result.message || "Verification request sent.";
+      }
+    } catch(e) {
+      status.textContent = e.message;
+    }
+  };
+
+  window.owSaveBusiness = async function(){
+    const status=document.getElementById("ow-business-status");
+    const payload={
+      name:document.getElementById("ow-business-name").value.trim(),
+      business_type:document.getElementById("ow-business-type").value.trim(),
+      phone:document.getElementById("ow-business-phone").value.trim(),
+      website:document.getElementById("ow-business-website").value.trim(),
+      address:document.getElementById("ow-business-address").value.trim(),
+      city_state:document.getElementById("ow-business-city").value.trim(),
+      hours:document.getElementById("ow-business-hours").value.trim(),
+      services:document.getElementById("ow-business-services").value.trim(),
+      policies:document.getElementById("ow-business-policies").value.trim()
+    };
+    if(!payload.name){ status.textContent="Business name is required."; return; }
+    try{
+      await owFetch("/onboarding/business", {method:"PUT",body:JSON.stringify(payload)});
+      status.textContent="Business saved.";
+      owStep(3);
+    }catch(e){ status.textContent=e.message; }
+  };
+
+  window.owSaveEmployee = async function(){
+    const status=document.getElementById("ow-employee-status");
+    const payload={
+      name:document.getElementById("ow-employee-name").value.trim(),
+      tone:document.getElementById("ow-employee-tone").value,
+      greeting:document.getElementById("ow-employee-greeting").value.trim(),
+      capabilities:document.getElementById("ow-employee-capabilities").value.trim(),
+      special_instructions:document.getElementById("ow-employee-instructions").value.trim()
+    };
+    if(!payload.name){ status.textContent="Employee name is required."; return; }
+    try{
+      await owFetch("/onboarding/employee", {method:"PUT",body:JSON.stringify(payload)});
+      status.textContent="AI Employee saved.";
+      owStep(4);
+    }catch(e){ status.textContent=e.message; }
+  };
+
+  window.owRunEmployeeTest = async function(){
+    const result=document.getElementById("ow-test-result");
+    const input=document.getElementById("ow-test-input").value.trim();
+    if(!input){ result.textContent="Enter a test customer message first."; return; }
+    result.textContent="OfficeWard is thinking...";
+    try{
+      const data=await owFetch("/onboarding/test-employee", {method:"POST",body:JSON.stringify({message:input})});
+      result.textContent=data.response || data.message || JSON.stringify(data,null,2);
+    }catch(e){ result.textContent="Test failed: " + e.message; }
+  };
+
+  window.owGoLive = async function(){
+    const status=document.getElementById("ow-live-status");
+    status.textContent="Launching OfficeWard...";
+    try{
+      await owFetch("/onboarding/go-live",{method:"POST",body:"{}"});
+      document.getElementById("officeward-onboarding").style.display="none";
+      if(typeof window.openDashboard==="function") window.openDashboard();
+      else document.getElementById("app").style.display="block";
+    }catch(e){ status.textContent=e.message; }
+  };
+
+  window.startOfficeWardOnboarding = function(){
+    const auth=document.getElementById("auth-screen");
+    const app=document.getElementById("app");
+    const onboarding=document.getElementById("officeward-onboarding");
+    if(auth) auth.style.display="none";
+    if(app) app.style.display="none";
+    if(onboarding) onboarding.style.display="block";
+    owStep(1);
+  };
+
+  // After a successful live login/signup, route to onboarding when the account
+  // has not completed it. Existing completed accounts can proceed to dashboard.
+  window.officeWardRouteAfterAuth = async function(){
+    try{
+      const me=await owFetch("/auth/me");
+      if(me && me.onboarding_complete){
+        if(typeof window.openDashboard==="function") window.openDashboard();
+      } else {
+        window.startOfficeWardOnboarding();
+      }
+    }catch(e){
+      window.startOfficeWardOnboarding();
+    }
+  };
+})();
+</script>
+
 </body>
 </html>
+
