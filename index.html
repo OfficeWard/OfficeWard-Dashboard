@@ -2493,8 +2493,7 @@ document.addEventListener("DOMContentLoaded", () => {
 (function(){
   const OW_API = window.OFFICEWARD_API_URL || "https://officeward-backend.onrender.com";
 
-  function owToken(){ return sessionStorage.getItem("officeward_token") || ""; }
-
+function owToken(){ return sessionStorage.getItem("officeward_session_token") || ""; }
   async function owFetch(path, options={}){
     const headers = Object.assign({"Content-Type":"application/json"}, options.headers || {});
     if (owToken()) headers.Authorization = "Bearer " + owToken();
