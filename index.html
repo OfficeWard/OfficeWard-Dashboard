@@ -895,6 +895,116 @@ html, body, button, input, textarea, select, option {
 }
 </style>
 
+<style id="officeward-onboarding-style">
+#officeward-onboarding {
+    display: none;
+    min-height: 100vh;
+    padding: 50px 20px;
+    background:
+        radial-gradient(circle at 50% 15%, rgba(22,131,255,.13), transparent 32%),
+        radial-gradient(circle at 80% 90%, rgba(22,131,255,.06), transparent 28%),
+        var(--bg);
+}
+
+.onboarding-shell {
+    width: min(640px, 100%);
+    margin: 0 auto;
+}
+
+.onboarding-progress {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 26px;
+}
+
+.ow-progress-step {
+    flex: 1;
+    height: 4px;
+    border-radius: 99px;
+    background: rgba(255,255,255,.08);
+    transition: background .2s;
+}
+
+.ow-progress-step.active {
+    background: var(--blue);
+}
+
+.ow-step {
+    display: none;
+}
+
+.ow-step.active {
+    display: block;
+}
+
+.ow-step h2 {
+    font-size: 22px;
+    margin-bottom: 7px;
+}
+
+.ow-verify-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 22px 0 4px;
+}
+
+.ow-verify-option {
+    border: 1px solid var(--border);
+    background: var(--panel);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: left;
+    color: var(--text);
+    transition: border-color .2s;
+}
+
+.ow-verify-option:hover {
+    border-color: rgba(22,131,255,.45);
+}
+
+.ow-verify-option strong {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 13px;
+}
+
+.ow-verify-option span {
+    display: block;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.5;
+}
+
+.ow-status {
+    margin-top: 14px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.5;
+    min-height: 16px;
+}
+
+.ow-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-top: 24px;
+}
+
+.ow-actions .auth-button,
+.ow-actions .secondary-button {
+    width: auto;
+    padding: 12px 20px;
+}
+
+@media (max-width: 620px) {
+    .ow-verify-options {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
 </head>
 
 <body>
@@ -1066,6 +1176,195 @@ html, body, button, input, textarea, select, option {
 
     </div>
 
+</section>
+
+
+<!-- =========================================================
+     OFFICEWARD ONBOARDING
+     (Shown after signup/login when the account has not yet
+     completed onboarding. Controlled by officeward-onboarding-logic
+     script at the bottom of the page — owStep/owSaveBusiness/etc.)
+========================================================= -->
+
+<section id="officeward-onboarding">
+    <div class="onboarding-shell">
+
+        <div class="auth-logo">
+            <div class="auth-logo-mark"></div>
+            <h1>OFFICEWARD</h1>
+            <p>SET UP YOUR AI EMPLOYEE</p>
+        </div>
+
+        <div class="onboarding-progress">
+            <div class="ow-progress-step active"></div>
+            <div class="ow-progress-step"></div>
+            <div class="ow-progress-step"></div>
+            <div class="ow-progress-step"></div>
+        </div>
+
+        <div class="auth-box">
+
+            <!-- STEP 1 — VERIFICATION -->
+            <div class="ow-step active">
+                <h2>Verify your account.</h2>
+                <p class="auth-subtitle">
+                    Choose how you'd like to verify your OfficeWard account
+                    before setting up your business.
+                </p>
+
+                <div class="ow-verify-options">
+                    <button class="ow-verify-option" onclick="owChooseVerification('stripe')">
+                        <strong>Subscribe with card</strong>
+                        <span>Set up billing now through secure checkout.</span>
+                    </button>
+
+                    <button class="ow-verify-option" onclick="owChooseVerification('email')">
+                        <strong>Verify by email</strong>
+                        <span>We'll send a confirmation link to your email.</span>
+                    </button>
+                </div>
+
+                <div id="ow-verification-status" class="ow-status"></div>
+
+                <div class="ow-actions">
+                    <span></span>
+                    <button class="auth-button" onclick="owGoToStep(2)">
+                        I've verified — continue
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 2 — BUSINESS INFO -->
+            <div class="ow-step">
+                <h2>Tell us about your business.</h2>
+                <p class="auth-subtitle">
+                    OfficeWard uses this to answer your customers accurately.
+                </p>
+
+                <div class="form-group">
+                    <label for="ow-business-name">Business name</label>
+                    <input id="ow-business-name" class="form-input" type="text" placeholder="Velocity Barber">
+                </div>
+
+                <div class="form-group">
+                    <label for="ow-business-type">Business type</label>
+                    <input id="ow-business-type" class="form-input" type="text" placeholder="Barbershop">
+                </div>
+
+                <div class="form-group">
+                    <label for="ow-business-phone">Business phone</label>
+                    <input id="ow-business-phone" class="form-input" type="tel" placeholder="(555) 010-1000">
+                </div>
+
+                <div class="form-group">
+                    <label for="ow-business-website">Website (optional)</label>
+                    <input id="ow-business-website" class="form-input" type="text" placeholder="https://">
+                </div>
+
+                <div class="form-group">
+                    <label for="ow-business-address">Address</label>
+                    <input id="ow-business-address" class="form-input" type="text" placeholder="123 Main Street">
+                </div>
+
+                <div class="form-group">
+                    <label for="ow-business-city">City / State</label>
+                    <input id="ow-business-city" class="form-input" type="text" placeholder="New York, NY">
+                </div>
+
+                <div class="form-group">
+                    <label for="ow-business-hours">Business hours</label>
+                    <input id="ow-business-hours" class="form-input" type="text" placeholder="Mon–Sat 9 AM–8 PM">
+                </div>
+
+                <div class="form-group">
+                    <label for="ow-business-services">Services &amp; pricing</label>
+                    <textarea id="ow-business-services" class="form-input" style="min-height:80px;resize:vertical;padding-top:10px;" placeholder="Haircut - $30&#10;Beard Trim - $20"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="ow-business-policies">Policies &amp; FAQs</label>
+                    <textarea id="ow-business-policies" class="form-input" style="min-height:80px;resize:vertical;padding-top:10px;" placeholder="Cancellation policy, parking info, etc."></textarea>
+                </div>
+
+                <div id="ow-business-status" class="ow-status"></div>
+
+                <div class="ow-actions">
+                    <button class="secondary-button" onclick="owGoToStep(1)">Back</button>
+                    <button class="auth-button" onclick="owSaveBusiness()">Save &amp; continue</button>
+                </div>
+            </div>
+
+            <!-- STEP 3 — AI EMPLOYEE -->
+            <div class="ow-step">
+                <h2>Configure your AI employee.</h2>
+                <p class="auth-subtitle">
+                    This is who your customers will talk to on the phone.
+                </p>
+
+                <div class="form-group">
+                    <label for="ow-employee-name">Employee name</label>
+                    <input id="ow-employee-name" class="form-input" type="text" placeholder="Alex">
+                </div>
+
+                <div class="form-group">
+                    <label for="ow-employee-tone">Personality</label>
+                    <select id="ow-employee-tone" class="form-input">
+                        <option value="professional_friendly">Professional &amp; Friendly</option>
+                        <option value="friendly_casual">Friendly &amp; Casual</option>
+                        <option value="professional">Professional</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="ow-employee-greeting">Greeting</label>
+                    <input id="ow-employee-greeting" class="form-input" type="text" placeholder="Thanks for calling Velocity Barber, this is Alex!">
+                </div>
+
+                <div class="form-group">
+                    <label for="ow-employee-capabilities">What can it do?</label>
+                    <textarea id="ow-employee-capabilities" class="form-input" style="min-height:70px;resize:vertical;padding-top:10px;" placeholder="Book appointments, answer questions, take messages"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="ow-employee-instructions">Special instructions</label>
+                    <textarea id="ow-employee-instructions" class="form-input" style="min-height:70px;resize:vertical;padding-top:10px;" placeholder="Never invent prices. Escalate anything unusual."></textarea>
+                </div>
+
+                <div id="ow-employee-status" class="ow-status"></div>
+
+                <div class="ow-actions">
+                    <button class="secondary-button" onclick="owGoToStep(2)">Back</button>
+                    <button class="auth-button" onclick="owSaveEmployee()">Save &amp; continue</button>
+                </div>
+            </div>
+
+            <!-- STEP 4 — TEST + GO LIVE -->
+            <div class="ow-step">
+                <h2>Test your AI employee.</h2>
+                <p class="auth-subtitle">
+                    Try a sample customer message before going live.
+                </p>
+
+                <div class="form-group">
+                    <label for="ow-test-input">Sample customer message</label>
+                    <input id="ow-test-input" class="form-input" type="text" placeholder="Can I get a haircut Saturday at 2?">
+                </div>
+
+                <button class="secondary-button" style="width:100%;" onclick="owRunEmployeeTest()">
+                    Run test
+                </button>
+
+                <div id="ow-test-result" class="ow-status" style="white-space:pre-wrap;"></div>
+                <div id="ow-live-status" class="ow-status"></div>
+
+                <div class="ow-actions">
+                    <button class="secondary-button" onclick="owGoToStep(3)">Back</button>
+                    <button class="auth-button" onclick="owGoLive()">Go live</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
 </section>
 
 
@@ -2021,10 +2320,30 @@ async function apiRequest(path, options = {}) {
         headers.Authorization = `Bearer ${token}`;
     }
 
-    const response = await fetch(
-        OFFICEWARD_API_URL.replace(/\/$/, "") + path,
-        { ...options, headers }
-    );
+    let response;
+    try {
+        response = await fetch(
+            OFFICEWARD_API_URL.replace(/\/$/, "") + path,
+            { ...options, headers }
+        );
+    } catch (networkError) {
+        // "Load failed" (Safari) / "Failed to fetch" (Chrome) means the
+        // request never got an HTTP response at all — almost always CORS
+        // (backend not allowing this page's origin) or a Render free-tier
+        // cold start (first request after idle can take 30-60s). This is
+        // NOT a signup/login logic bug — check the Network tab for the
+        // actual blocked/pending request.
+        console.error("OfficeWard network error calling", path, networkError);
+        const err = new Error(
+            "Could not reach the OfficeWard backend. This is almost always " +
+            "either a CORS problem (the server isn't allowing this site's " +
+            "origin) or the backend still waking up from a cold start. " +
+            "Open the browser console's Network tab and look at the " +
+            OFFICEWARD_API_URL + path + " request for the real error."
+        );
+        err.status = 0;
+        throw err;
+    }
 
     let data = {};
     try {
@@ -2128,7 +2447,16 @@ async function demoSignUp() {
             return;
         }
 
-        await loadAuthenticatedDashboard(data.user);
+        // FIX: previously this always went straight to the dashboard,
+        // skipping business/employee setup entirely — the onboarding
+        // script existed but nothing ever routed a fresh signup into it.
+        if (data.user.onboarding_complete) {
+            await loadAuthenticatedDashboard(data.user);
+        } else if (typeof window.startOfficeWardOnboarding === "function") {
+            window.startOfficeWardOnboarding({ businessName });
+        } else {
+            await loadAuthenticatedDashboard(data.user);
+        }
     } catch (error) {
         showAuthNotice(
             error.message || "Unable to create the account.",
@@ -2163,7 +2491,14 @@ async function demoSignIn() {
         });
 
         setAuthToken(data.token);
-        await loadAuthenticatedDashboard(data.user);
+
+        if (data.user.onboarding_complete) {
+            await loadAuthenticatedDashboard(data.user);
+        } else if (typeof window.startOfficeWardOnboarding === "function") {
+            window.startOfficeWardOnboarding();
+        } else {
+            await loadAuthenticatedDashboard(data.user);
+        }
     } catch (error) {
         if (error.status === 402) {
             showAuthNotice(
@@ -2337,7 +2672,26 @@ function demoForgot() {
 
 async function restoreDemoSession() {
     if (!getAuthToken()) return;
-    await loadAuthenticatedDashboard();
+
+    // FIX: previously always jumped straight into the dashboard, so a
+    // returning user who hadn't finished onboarding never saw it again.
+    try {
+        const me = await apiRequest("/auth/me");
+
+        if (me.onboarding_complete) {
+            await loadAuthenticatedDashboard(me);
+        } else if (typeof window.startOfficeWardOnboarding === "function") {
+            window.startOfficeWardOnboarding();
+        } else {
+            await loadAuthenticatedDashboard(me);
+        }
+    } catch (error) {
+        if (error.status === 401) {
+            clearAuthToken();
+        }
+        // Network/other errors: leave the auth screen showing rather than
+        // silently failing — the person can retry sign-in manually.
+    }
 }
 
 
@@ -2497,7 +2851,17 @@ function owToken(){ return sessionStorage.getItem("officeward_session_token") ||
   async function owFetch(path, options={}){
     const headers = Object.assign({"Content-Type":"application/json"}, options.headers || {});
     if (owToken()) headers.Authorization = "Bearer " + owToken();
-    const res = await fetch(OW_API + path, Object.assign({}, options, {headers}));
+    let res;
+    try {
+      res = await fetch(OW_API + path, Object.assign({}, options, {headers}));
+    } catch (networkError) {
+      console.error("OfficeWard onboarding network error calling", path, networkError);
+      throw new Error(
+        "Could not reach the OfficeWard backend (CORS or a cold-starting " +
+        "Render service, not an onboarding bug). Check the Network tab for " +
+        OW_API + path + "."
+      );
+    }
     let data = {};
     try { data = await res.json(); } catch(e) {}
     if (!res.ok) throw new Error(data.detail || data.message || ("Request failed (" + res.status + ")"));
@@ -2590,7 +2954,7 @@ function owToken(){ return sessionStorage.getItem("officeward_session_token") ||
     }catch(e){ status.textContent=e.message; }
   };
 
-  window.startOfficeWardOnboarding = function(){
+  window.startOfficeWardOnboarding = function(prefill){
     const auth=document.getElementById("auth-screen");
     const app=document.getElementById("app");
     const onboarding=document.getElementById("officeward-onboarding");
@@ -2598,6 +2962,10 @@ function owToken(){ return sessionStorage.getItem("officeward_session_token") ||
     if(app) app.style.display="none";
     if(onboarding) onboarding.style.display="block";
     owStep(1);
+    if (prefill && prefill.businessName) {
+      const nameField = document.getElementById("ow-business-name");
+      if (nameField) nameField.value = prefill.businessName;
+    }
   };
 
   // After a successful live login/signup, route to onboarding when the account
