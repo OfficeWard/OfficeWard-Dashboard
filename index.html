@@ -2874,6 +2874,31 @@ function owToken(){ return sessionStorage.getItem("officeward_session_token") ||
   }
   window.owGoToStep = owStep;
 
+  window.owVerifyAndContinue = async function(){
+    const status = document.getElementById("ow-verification-status");
+
+    try {
+        status.textContent = "Checking verification status...";
+
+        const result = await owFetch("/onboarding/status");
+
+        const verified = !!result.email_verified;
+        const paid = result.subscription_status === "active";
+
+        if (!verified && !paid) {
+            status.textContent =
+                "Email not verified yet. Please verify your email before continuing.";
+            return;
+        }
+
+        status.textContent = "Verification confirmed.";
+        owStep(2);
+
+    } catch (e) {
+        status.textContent =
+            e.message || "Unable to confirm verification status.";
+    }
+};
   window.owChooseVerification = async function(method){
     const status = document.getElementById("ow-verification-status");
     try {
